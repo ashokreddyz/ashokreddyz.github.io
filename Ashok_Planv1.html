@@ -1,0 +1,1305 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ashok's Master OS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg:#0a0c10; --surface:#10131a; --card:#161b26; --card2:#1c2232;
+  --border:#1f2840; --border2:#2a3550;
+  --cyan:#00e5ff; --purple:#8b5cf6; --green:#22c55e;
+  --gold:#f5a623; --orange:#f97316; --pink:#ec4899;
+  --red:#ef4444; --blue:#3b82f6;
+  --text:#e8edf5; --text2:#94a3b8; --muted:#4a5568;
+  --sans:'Space Grotesk',sans-serif; --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;min-height:100vh;}
+a{color:inherit;text-decoration:none;}
+
+/* ── HERO ── */
+.hero{
+  padding:44px 20px 28px;
+  background:linear-gradient(150deg,#0d1018 0%,#111828 55%,#090c12 100%);
+  border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.hero::before{content:'';position:absolute;top:-100px;right:-80px;width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,229,255,0.06) 0%,transparent 65%);pointer-events:none;}
+.hero::after{content:'';position:absolute;bottom:-80px;left:25%;width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(139,92,246,0.05) 0%,transparent 65%);pointer-events:none;}
+.hero-eye{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--cyan);text-transform:uppercase;margin-bottom:10px;}
+.hero h1{font-size:clamp(24px,5vw,40px);font-weight:700;line-height:1.1;margin-bottom:6px;}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:13px;color:var(--text2);margin-bottom:20px;}
+.chips{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:20px;border:1px solid var(--border2);background:var(--card);color:var(--text2);display:flex;align-items:center;gap:5px;}
+.chip .d{width:5px;height:5px;border-radius:50%;}
+
+/* ── NAV TABS ── */
+.nav-wrap{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.nav-scroll{display:flex;gap:2px;padding:6px 12px;overflow-x:auto;scrollbar-width:none;}
+.nav-scroll::-webkit-scrollbar{display:none;}
+.ntab{flex-shrink:0;padding:7px 14px;border:none;background:transparent;color:var(--muted);
+  font-family:var(--sans);font-size:11px;font-weight:600;border-radius:7px;cursor:pointer;transition:all .18s;white-space:nowrap;}
+.ntab.active{background:var(--card);color:var(--text);border:1px solid var(--border2);}
+.ntab:hover:not(.active){color:var(--text2);}
+
+/* ── MAIN ── */
+.main{padding:20px 16px 56px;max-width:980px;margin:0 auto;}
+.panel{display:none;}.panel.active{display:block;}
+.sec{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:14px;padding-left:2px;}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.card-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.card-title{font-weight:700;font-size:13px;}
+.badge{font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.b-cyan{background:rgba(0,229,255,.1);color:var(--cyan);border:1px solid rgba(0,229,255,.2);}
+.b-purple{background:rgba(139,92,246,.1);color:#a78bfa;border:1px solid rgba(139,92,246,.2);}
+.b-green{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);}
+.b-gold{background:rgba(245,166,35,.1);color:var(--gold);border:1px solid rgba(245,166,35,.2);}
+.b-orange{background:rgba(249,115,22,.1);color:var(--orange);border:1px solid rgba(249,115,22,.2);}
+.b-pink{background:rgba(236,72,153,.1);color:var(--pink);border:1px solid rgba(236,72,153,.2);}
+.b-red{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.2);}
+.b-muted{background:rgba(74,85,104,.12);color:var(--muted);border:1px solid rgba(74,85,104,.2);}
+
+/* ── GRID HELPERS ── */
+.g2{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-bottom:24px;}
+.g3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:24px;}
+.g4{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:24px;}
+
+/* ── WEEK OVERVIEW ── */
+.week-scroll{overflow-x:auto;margin-bottom:24px;}
+.week-row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;min-width:700px;}
+.wday{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.wday-head{padding:8px 10px 6px;border-bottom:1px solid var(--border);text-align:center;}
+.wday-label{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;}
+.wday-type{font-size:10px;font-weight:700;margin-top:2px;}
+.wday-body{padding:8px 10px 10px;}
+.wblock{font-size:9px;padding:4px 6px;border-radius:5px;margin-bottom:3px;font-weight:600;text-align:center;letter-spacing:.03em;}
+.wb-work{background:rgba(245,158,11,.12);color:#f59e0b;}
+.wb-gym{background:rgba(0,229,255,.1);color:var(--cyan);}
+.wb-oscp{background:rgba(239,68,68,.1);color:#fca5a5;}
+.wb-alt{background:rgba(139,92,246,.1);color:#a78bfa;}
+.wb-meal{background:rgba(34,197,94,.1);color:var(--green);}
+.wb-explore{background:rgba(245,166,35,.1);color:var(--gold);}
+.wb-prep{background:rgba(236,72,153,.1);color:var(--pink);}
+.wb-rest{background:rgba(74,85,104,.08);color:var(--muted);}
+
+/* ── TIMELINE ── */
+.tl{padding:10px 16px 14px;}
+.tl-row{display:flex;gap:10px;margin-bottom:7px;align-items:flex-start;}
+.tl-time{font-family:var(--mono);font-size:9px;color:var(--muted);min-width:62px;padding-top:3px;flex-shrink:0;}
+.tl-pipe{display:flex;flex-direction:column;align-items:center;padding-top:5px;gap:2px;}
+.tl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tl-line{width:1px;background:var(--border);flex:1;min-height:14px;}
+.tl-body{flex:1;}
+.tl-name{font-size:12px;font-weight:600;line-height:1.3;}
+.tl-note{font-size:10px;color:var(--text2);line-height:1.4;margin-top:1px;}
+.tl-prot{font-family:var(--mono);font-size:9px;color:var(--green);margin-top:2px;}
+
+/* dot colours */
+.dc-wake{background:var(--muted);}
+.dc-food{background:var(--green);}
+.dc-commute{background:var(--orange);}
+.dc-work{background:var(--gold);}
+.dc-gym{background:var(--cyan);}
+.dc-study{background:#a78bfa;}
+.dc-prep{background:var(--pink);}
+.dc-night{background:#475569;}
+.dc-whey{background:var(--green);}
+.dc-explore{background:var(--gold);}
+
+/* ── MACRO STRIP ── */
+.macro-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:24px;}
+.macro-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.macro-val{font-family:var(--mono);font-size:20px;font-weight:700;line-height:1;margin-bottom:4px;}
+.macro-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;}
+.macro-note{font-size:10px;color:var(--text2);margin-top:4px;}
+
+/* ── ROW LIST (ingredients / exercises / meals) ── */
+.row-list{list-style:none;}
+.row-list li{font-size:11px;padding:5px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.row-list li:last-child{border-bottom:none;}
+.row-val{font-family:var(--mono);font-size:10px;color:var(--cyan);flex-shrink:0;}
+.row-val-green{color:var(--green);}
+.row-val-gold{color:var(--gold);}
+
+/* ── RECIPE MACROS BAR ── */
+.r-macros{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.rm{flex:1;padding:7px 8px;text-align:center;border-right:1px solid var(--border);}
+.rm:last-child{border-right:none;}
+.rm-v{font-family:var(--mono);font-size:12px;font-weight:700;display:block;}
+.rm-l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+
+/* ── STEPS ── */
+.steps-body{padding:10px 16px 14px;}
+.step-row{display:flex;gap:10px;margin-bottom:7px;align-items:flex-start;}
+.step-n{font-family:var(--mono);font-size:9px;color:var(--gold);background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.18);border-radius:4px;min-width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-t{font-size:11px;color:var(--text2);line-height:1.5;flex:1;}
+.step-time{font-family:var(--mono);font-size:9px;color:var(--cyan);background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.14);border-radius:4px;padding:1px 5px;white-space:nowrap;margin-left:4px;}
+
+/* ── PPL TABLE ── */
+.ppl-type{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:20px;}
+.ppl-push{background:rgba(0,229,255,.1);color:var(--cyan);}
+.ppl-pull{background:rgba(139,92,246,.1);color:#a78bfa;}
+.ppl-legs{background:rgba(34,197,94,.1);color:var(--green);}
+
+/* ── PROTEIN BARS ── */
+.pb-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;}
+.pb-title{font-size:13px;font-weight:700;margin-bottom:14px;}
+.pb-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.pb-lbl{font-size:11px;min-width:170px;flex-shrink:0;}
+.pb-bg{flex:1;height:5px;background:var(--surface);border-radius:3px;overflow:hidden;}
+.pb-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--green));}
+.pb-v{font-family:var(--mono);font-size:10px;color:var(--green);min-width:34px;text-align:right;}
+.pb-total{border-top:1px solid var(--border);margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;align-items:center;}
+.pb-total-l{font-size:12px;font-weight:700;}
+.pb-total-v{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--green);}
+
+/* ── SUPPLEMENT CARDS ── */
+.supp-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;}
+.supp-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
+.supp-name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.supp-dose{font-family:var(--mono);font-size:10px;color:var(--gold);margin-bottom:4px;}
+.supp-why{font-size:11px;color:var(--text2);line-height:1.4;}
+.supp-when{font-family:var(--mono);font-size:9px;color:var(--cyan);margin-top:4px;}
+.active-tag{font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:10px;background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);margin-left:6px;}
+
+/* ── STUDY TRACK ── */
+.study-track{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;}
+.study-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;}
+.study-title{font-size:13px;font-weight:700;}
+.day-pills{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:10px;}
+.dp{text-align:center;font-family:var(--mono);font-size:9px;padding:5px 2px;border-radius:6px;}
+.dp-on{background:rgba(0,229,255,.1);color:var(--cyan);border:1px solid rgba(0,229,255,.18);}
+.dp-alt{background:rgba(139,92,246,.1);color:#a78bfa;border:1px solid rgba(139,92,246,.18);}
+.dp-full{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.18);}
+.dp-off{background:var(--surface);color:var(--border);}
+.study-note{font-size:11px;color:var(--text2);line-height:1.5;}
+
+/* ── PLACES / 52 SPOTS ── */
+.filter-bar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px;align-items:center;}
+.filter-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;}
+.fbtn{font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;}
+.fbtn:hover{background:var(--card);color:var(--text);}
+.fbtn.fn.active{background:rgba(34,197,94,.12);color:var(--green);border-color:rgba(34,197,94,.25);}
+.fbtn.fm.active{background:rgba(0,229,255,.1);color:var(--cyan);border-color:rgba(0,229,255,.2);}
+.fbtn.ff.active{background:rgba(245,166,35,.1);color:var(--gold);border-color:rgba(245,166,35,.2);}
+.fbtn.ft.active{background:rgba(139,92,246,.1);color:#a78bfa;border-color:rgba(139,92,246,.2);}
+.fbtn.fc.active{background:rgba(249,115,22,.1);color:var(--orange);border-color:rgba(249,115,22,.2);}
+.fbtn.fb.active{background:rgba(6,182,212,.1);color:#22d3ee;border-color:rgba(6,182,212,.2);}
+.sbox{padding:6px 12px;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:12px;outline:none;width:160px;margin-left:auto;}
+.sbox::placeholder{color:var(--muted);}
+.rcount{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:14px;}
+.month-block{margin-bottom:28px;}
+.month-hd{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.month-nm{font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:.12em;}
+.month-ln{flex:1;height:1px;background:var(--border);}
+.spots-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:12px;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s,transform .15s;}
+.sc:hover{border-color:var(--border2);transform:translateY(-2px);}
+.sc.hidden{display:none;}
+.sc-head{padding:11px 14px 7px;border-bottom:1px solid var(--border);}
+.sc-wk{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;margin-bottom:3px;display:flex;justify-content:space-between;}
+.sc-name{font-size:13px;font-weight:700;line-height:1.3;margin-bottom:3px;}
+.sc-loc{font-size:10px;color:var(--text2);display:flex;align-items:center;gap:5px;}
+.sc-dist{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:10px;margin-left:auto;flex-shrink:0;}
+.dn{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);}
+.dm{background:rgba(0,229,255,.08);color:var(--cyan);border:1px solid rgba(0,229,255,.16);}
+.df{background:rgba(245,166,35,.08);color:var(--gold);border:1px solid rgba(245,166,35,.16);}
+.sc-body{padding:9px 14px 11px;}
+.sc-what{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:7px;}
+.stags{display:flex;flex-wrap:wrap;gap:4px;}
+.st{font-size:9px;padding:2px 7px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--muted);}
+.st.sn{background:rgba(34,197,94,.07);color:var(--green);border-color:rgba(34,197,94,.18);}
+.st.sc2{background:rgba(139,92,246,.07);color:#a78bfa;border-color:rgba(139,92,246,.18);}
+.st.sb{background:rgba(6,182,212,.07);color:#22d3ee;border-color:rgba(6,182,212,.18);}
+.st.sf{background:rgba(249,115,22,.07);color:var(--orange);border-color:rgba(249,115,22,.18);}
+.st.sh{background:rgba(245,166,35,.07);color:var(--gold);border-color:rgba(245,166,35,.18);}
+.no-res{text-align:center;padding:40px;color:var(--muted);font-size:13px;display:none;}
+.no-res.show{display:block;}
+.sstat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:20px;}
+.sstat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 14px;}
+.sstat-v{font-family:var(--mono);font-size:18px;font-weight:700;line-height:1;margin-bottom:3px;}
+.sstat-l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.place-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.place-month{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:.12em;margin-bottom:6px;}
+.place-name{font-size:14px;font-weight:700;margin-bottom:4px;}
+.place-dist{font-size:11px;color:var(--muted);margin-bottom:8px;}
+.ptags{display:flex;flex-wrap:wrap;gap:4px;}
+.ptag{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--muted);}
+
+/* ── PREP TIMELINE ── */
+.prep-row{display:flex;gap:12px;margin-bottom:10px;align-items:flex-start;}
+.prep-time{font-family:var(--mono);font-size:10px;color:var(--muted);min-width:72px;padding-top:2px;flex-shrink:0;}
+.prep-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+.prep-body{flex:1;}
+.prep-name{font-size:12px;font-weight:700;}
+.prep-detail{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.4;}
+.prep-tag{display:inline-block;font-family:var(--mono);font-size:9px;padding:1px 7px;border-radius:10px;margin-top:4px;}
+
+/* ── NOTE BOX ── */
+.note{background:rgba(245,166,35,.04);border:1px solid rgba(245,166,35,.16);border-radius:10px;padding:14px 16px;font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:20px;}
+.note strong{color:var(--gold);}
+
+/* ── WEEK MEAL GRID ── */
+.meal-slot{font-size:10px;padding:4px 0;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:1px;}
+.meal-slot:last-child{border-bottom:none;}
+.ms-time{font-family:var(--mono);font-size:9px;color:var(--muted);}
+.ms-name{font-weight:600;font-size:10px;line-height:1.3;}
+.ms-prot{font-family:var(--mono);font-size:9px;color:var(--green);}
+.t-meat{color:var(--gold);}
+.t-veg{color:var(--green);}
+.t-std{color:var(--cyan);}
+
+/* ── 6PACK INFO ── */
+.info-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px;}
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.info-val{font-family:var(--mono);font-size:18px;font-weight:700;line-height:1;margin-bottom:4px;}
+.info-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+.info-note{font-size:11px;color:var(--text2);margin-top:5px;}
+
+.fbtn.fadv.active{background:rgba(239,68,68,.14);color:#fca5a5;border-color:rgba(239,68,68,.3);}
+.b-adv{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.25);}
+.st.sadv{background:rgba(239,68,68,.08);color:#fca5a5;border-color:rgba(239,68,68,.2);}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HERO ═══════════ -->
+<div class="hero">
+  <div class="hero-eye">// master_os.v2 — Morrisville NC 27560 → Office 27606 → Planet Fitness 27617</div>
+  <h1>Ashok's <em>Complete OS</em></h1>
+  <div class="hero-sub">Schedule · Gym · Study · Meals · Supplements · Saturday Explore — all in one</div>
+  <div class="chips">
+    <div class="chip"><span class="d" style="background:var(--cyan)"></span>NC DHHS · 8:20–4:20 PM</div>
+    <div class="chip"><span class="d" style="background:var(--gold)"></span>Planet Fitness PPL ×6</div>
+    <div class="chip"><span class="d" style="background:var(--red)"></span>OSCP Primary</div>
+    <div class="chip"><span class="d" style="background:var(--green)"></span>2,000 kcal · 176g protein</div>
+    <div class="chip"><span class="d" style="background:var(--purple)"></span>Creatine 5g active</div>
+    <div class="chip"><span class="d" style="background:var(--pink)"></span>Sunday meal prep 8–10 AM</div>
+    <div class="chip"><span class="d" style="background:var(--orange)"></span>🐟 Tilapia Tue/Wed/Fri</div>
+  </div>
+</div>
+
+<!-- ═══════════ NAV ═══════════ -->
+<div class="nav-wrap">
+  <div class="nav-scroll">
+    <button class="ntab active" onclick="go('week')">📅 Week View</button>
+    <button class="ntab" onclick="go('schedule')">⏱ Daily Schedule</button>
+    <button class="ntab" onclick="go('gym')">💪 PPL Splits</button>
+    <button class="ntab" onclick="go('study')">🔐 Study Plan</button>
+    <button class="ntab" onclick="go('meals')">🍛 Meal Overview</button>
+    <button class="ntab" onclick="go('recipes')">📖 Recipes</button>
+    <button class="ntab" onclick="go('protein')">📊 Protein</button>
+    <button class="ntab" onclick="go('supps')">💊 Supplements</button>
+    <button class="ntab" onclick="go('sunday')">🧑‍🍳 Sunday Prep</button>
+    <button class="ntab" onclick="go('places')">🗺️ 52 Saturdays</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════════════════════════════════
+     TAB 1 — WEEK VIEW
+═══════════════════════════════════════════════ -->
+<div class="panel active" id="tab-week">
+
+  <div class="sec">// weekly_overview — everything at a glance</div>
+  <div class="week-scroll">
+    <div class="week-row">
+
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">MON</div><div class="wday-type t-std">Push A</div></div>
+        <div class="wday-body">
+          <div class="wblock wb-work">Work 8:20–4:20</div>
+          <div class="wblock wb-gym">PUSH 5–7 PM</div>
+          <div class="wblock wb-meal">Chicken Palao</div>
+          <div class="wblock wb-oscp">OSCP 8–10 PM</div>
+          <div class="wblock wb-rest">Sleep 10:30</div>
+        </div>
+      </div>
+
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">TUE</div><div class="wday-type t-std">Pull A</div></div>
+        <div class="wday-body">
+          <div class="wblock wb-work">Work 8:20–4:20</div>
+          <div class="wblock wb-gym">PULL 5–7 PM</div>
+          <div class="wblock wb-meal">Palao + Khichdi</div>
+          <div class="wblock wb-oscp">OSCP 8–10 PM</div>
+          <div class="wblock wb-rest">Sleep 10:30</div>
+        </div>
+      </div>
+
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">WED</div><div class="wday-type t-veg">Legs + Veg</div></div>
+        <div class="wday-body">
+          <div class="wblock wb-work">Work 8:20–4:20</div>
+          <div class="wblock wb-gym">LEGS 5–7 PM</div>
+          <div class="wblock wb-meal">Dal Khichdi</div>
+          <div class="wblock wb-alt">DevSecOps 8–10</div>
+          <div class="wblock wb-rest">Sleep 10:30</div>
+        </div>
+      </div>
+
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">THU</div><div class="wday-type t-std">Push B</div></div>
+        <div class="wday-body">
+          <div class="wblock wb-work">Work 8:20–4:20</div>
+          <div class="wblock wb-gym">PUSH 5–7 PM</div>
+          <div class="wblock wb-meal">Chicken Palao</div>
+          <div class="wblock wb-oscp">OSCP 8–10 PM</div>
+          <div class="wblock wb-rest">Sleep 10:30</div>
+        </div>
+      </div>
+
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">FRI</div><div class="wday-type t-std">Pull B</div></div>
+        <div class="wday-body">
+          <div class="wblock wb-work">Work 8:20–4:20</div>
+          <div class="wblock wb-gym">PULL 5–7 PM</div>
+          <div class="wblock wb-meal">Palao + Khichdi</div>
+          <div class="wblock wb-alt">AI RedTeam 8–10</div>
+          <div class="wblock wb-rest">Sleep 10:30</div>
+        </div>
+      </div>
+
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">SAT</div><div class="wday-type t-veg">Legs + Explore</div></div>
+        <div class="wday-body">
+          <div class="wblock wb-gym">LEGS 8–10 AM</div>
+          <div class="wblock wb-explore">Explore 11:30+</div>
+          <div class="wblock wb-meal">Pack lunch</div>
+          <div class="wblock wb-rest">Full rest eve</div>
+          <div class="wblock wb-rest">No study ✓</div>
+        </div>
+      </div>
+
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">SUN</div><div class="wday-type" style="color:var(--pink)">Prep + OSCP</div></div>
+        <div class="wday-body">
+          <div class="wblock wb-prep">Meal Prep 8–10</div>
+          <div class="wblock wb-oscp">OSCP 10:30–1</div>
+          <div class="wblock wb-meal">Dal Khichdi</div>
+          <div class="wblock wb-oscp">OSCP 2–4:30</div>
+          <div class="wblock wb-rest">Sleep 10 PM</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="sec">// stats_at_a_glance</div>
+  <div class="info-row">
+    <div class="info-card"><div class="info-val" style="color:var(--cyan)">11h</div><div class="info-lbl">OSCP weekly</div><div class="info-note">Mon/Tue/Thu eve + Sunday 5h deep</div></div>
+    <div class="info-card"><div class="info-val" style="color:var(--gold)">12h</div><div class="info-lbl">Gym weekly</div><div class="info-note">6 sessions × 2h · PPL rotation</div></div>
+    <div class="info-card"><div class="info-val" style="color:var(--green)">176g</div><div class="info-lbl">Protein/day</div><div class="info-note">Whey + palao + tilapia + eggs + curd</div></div>
+    <div class="info-card"><div class="info-val" style="color:var(--purple)">2h</div><div class="info-lbl">DevSecOps</div><div class="info-note">Wednesday — job-relevant at NC DHHS</div></div>
+    <div class="info-card"><div class="info-val" style="color:var(--pink)">2h</div><div class="info-lbl">Sunday prep</div><div class="info-note">Covers all 5 lunches + 3 dinners</div></div>
+    <div class="info-card"><div class="info-val" style="color:var(--orange)">52×</div><div class="info-lbl">Saturday spots</div><div class="info-note">Every Saturday a new place</div></div>
+  </div>
+
+  <div class="note"><strong>Cert priority:</strong> OSCP is primary — Mon, Tue, Thu evenings + all Sunday (5h). DevSecOps on Wednesday, AI Red Teamer on Friday. No study Saturdays — mental reset = better Sunday absorption. Week A uses Chicken Palao + Dal Khichdi. Week B swaps to Mutton Palao + Dal Khichdi.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TAB 2 — DAILY SCHEDULE
+═══════════════════════════════════════════════ -->
+<div class="panel" id="tab-schedule">
+  <div class="sec">// weekday_template — Mon / Tue / Thu (Push + Pull)</div>
+  <div class="g2">
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Mon · Tue · Thu</div><span class="badge b-cyan">PUSH / PULL + OSCP</span></div>
+      <div class="tl">
+        <div class="tl-row"><div class="tl-time">6:45 AM</div><div class="tl-pipe"><div class="tl-dot dc-wake"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Wake up</div><div class="tl-note">500ml water · 5 min stretch</div></div></div>
+        <div class="tl-row"><div class="tl-time">7:00 AM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Oats + Whey + Banana</div><div class="tl-note">Creatine 5g in water · black coffee</div><div class="tl-prot">35g protein · 450 kcal</div></div></div>
+        <div class="tl-row"><div class="tl-time">7:40 AM</div><div class="tl-pipe"><div class="tl-dot dc-commute"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Leave home</div><div class="tl-note">Pack lunch box from fridge · 27560 → 27606</div></div></div>
+        <div class="tl-row"><div class="tl-time">8:20 AM</div><div class="tl-pipe"><div class="tl-dot dc-work"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Office — NC DHHS</div><div class="tl-note">Deep work · security engineering</div></div></div>
+        <div class="tl-row"><div class="tl-time">12:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Lunch — Chicken Palao</div><div class="tl-note">Prepped box · microwave · + 1 boiled egg on side</div><div class="tl-prot">48g protein · 560 kcal</div></div></div>
+        <div class="tl-row"><div class="tl-time">3:30 PM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Office snack</div><div class="tl-note">Greek yogurt 150g + 15 almonds</div><div class="tl-prot">10–12g protein · 200 kcal</div></div></div>
+        <div class="tl-row"><div class="tl-time">4:20 PM</div><div class="tl-pipe"><div class="tl-dot dc-commute"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Leave office → Planet Fitness 27617</div><div class="tl-note">~30 min drive</div></div></div>
+        <div class="tl-row"><div class="tl-time">5:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-gym"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Planet Fitness — 2 hrs</div><div class="tl-note">Warm-up 10 min → workout → 10 min incline walk</div></div></div>
+        <div class="tl-row"><div class="tl-time">7:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-whey"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Post-gym Whey shake</div><div class="tl-note">Immediately after last set · drive home</div><div class="tl-prot">25g protein · 120 kcal</div></div></div>
+        <div class="tl-row"><div class="tl-time">7:45 PM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Dinner — Palao + 1 roti</div><div class="tl-note">Same prepped batch · roti adds carbs on training days</div><div class="tl-prot">35g protein · 550 kcal</div></div></div>
+        <div class="tl-row"><div class="tl-time">8:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-study"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">OSCP study — 2 hrs</div><div class="tl-note">PEN-200 modules / HTB labs / writeups</div></div></div>
+        <div class="tl-row"><div class="tl-time">10:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Night — Curd 150g</div><div class="tl-note">Casein overnight · no screens after 10:30</div><div class="tl-prot">8g protein · 80 kcal</div></div></div>
+        <div class="tl-row"><div class="tl-time">10:30 PM</div><div class="tl-pipe"><div class="tl-dot dc-night"></div></div><div class="tl-body"><div class="tl-name">Sleep — 8h15m</div><div class="tl-note">Recovery + memory consolidation</div></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Wednesday</div><span class="badge b-green">LEGS + VEG + DevSecOps</span></div>
+      <div class="tl">
+        <div class="tl-row"><div class="tl-time">6:45 AM</div><div class="tl-pipe"><div class="tl-dot dc-wake"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Wake up</div><div class="tl-note">Hydrate · stretch</div></div></div>
+        <div class="tl-row"><div class="tl-time">7:00 AM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Oats + Whey + 2 bananas</div><div class="tl-note">Leg day = more carbs pre-commute</div><div class="tl-prot">35g protein · 480 kcal</div></div></div>
+        <div class="tl-row"><div class="tl-time">7:40 AM</div><div class="tl-pipe"><div class="tl-dot dc-commute"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Commute · pack Dal Khichdi box</div></div></div>
+        <div class="tl-row"><div class="tl-time">8:20–4:20</div><div class="tl-pipe"><div class="tl-dot dc-work"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Office — NC DHHS</div><div class="tl-note">12 PM Dal Khichdi + tilapia fillet + 1 egg</div><div class="tl-prot">48g protein at lunch</div></div></div>
+        <div class="tl-row"><div class="tl-time">5:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-gym"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Planet Fitness — LEGS</div><div class="tl-note">Squats · RDL · leg press · lunges · calves · abs</div></div></div>
+        <div class="tl-row"><div class="tl-time">7:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-whey"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Post-gym Whey · drive home</div><div class="tl-prot">25g protein</div></div></div>
+        <div class="tl-row"><div class="tl-time">7:45 PM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Dinner — Tilapia fillet + Dal Khichdi + 1 egg</div><div class="tl-prot">58g protein · 560 kcal</div></div></div>
+        <div class="tl-row"><div class="tl-time">8:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-study"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">DevSecOps — 2 hrs</div><div class="tl-note">CI/CD security · containers · SAST/DAST · IaC</div></div></div>
+        <div class="tl-row"><div class="tl-time">10:30 PM</div><div class="tl-pipe"><div class="tl-dot dc-night"></div></div><div class="tl-body"><div class="tl-name">Sleep</div></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Friday</div><span class="badge b-purple">PULL + AI RedTeam</span></div>
+      <div class="tl">
+        <div class="tl-row"><div class="tl-time">6:45 AM</div><div class="tl-pipe"><div class="tl-dot dc-wake"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Wake up</div></div></div>
+        <div class="tl-row"><div class="tl-time">7:00 AM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Oats + Whey + Banana</div><div class="tl-prot">35g protein</div></div></div>
+        <div class="tl-row"><div class="tl-time">8:20–4:20</div><div class="tl-pipe"><div class="tl-dot dc-work"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Office — NC DHHS · Chicken Palao lunch</div><div class="tl-prot">42g protein at lunch</div></div></div>
+        <div class="tl-row"><div class="tl-time">5:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-gym"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Planet Fitness — PULL B</div><div class="tl-note">Deadlift · pulldowns · rows · curls</div></div></div>
+        <div class="tl-row"><div class="tl-time">7:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-whey"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Post-gym Whey · drive home</div></div></div>
+        <div class="tl-row"><div class="tl-time">7:45 PM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Dinner — Tilapia fillet + Dal Khichdi + 1 egg</div><div class="tl-note">Pan-fry tilapia 10 min · side of khichdi</div><div class="tl-prot">58g protein · 560 kcal</div></div></div>
+        <div class="tl-row"><div class="tl-time">8:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-study"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">AI Red Teamer — 2 hrs</div><div class="tl-note">LLM attacks · prompt injection · model evasion</div></div></div>
+        <div class="tl-row"><div class="tl-time">10:30 PM</div><div class="tl-pipe"><div class="tl-dot dc-night"></div></div><div class="tl-body"><div class="tl-name">Sleep · week done ✓</div></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Saturday</div><span class="badge b-gold">LEGS + EXPLORE</span></div>
+      <div class="tl">
+        <div class="tl-row"><div class="tl-time">7:30 AM</div><div class="tl-pipe"><div class="tl-dot dc-wake"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Wake — no rush</div><div class="tl-note">Coffee · light stretch</div></div></div>
+        <div class="tl-row"><div class="tl-time">8:00 AM</div><div class="tl-pipe"><div class="tl-dot dc-gym"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Planet Fitness — LEGS (2h)</div><div class="tl-note">Squats · RDL · leg press · abs · shower at gym</div></div></div>
+        <div class="tl-row"><div class="tl-time">10:30 AM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Post-gym meal</div><div class="tl-note">Whey + banana · pack lunch for outing</div></div></div>
+        <div class="tl-row"><div class="tl-time">11:30 AM</div><div class="tl-pipe"><div class="tl-dot dc-explore"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">🗺️ Explore new place</div><div class="tl-note">Monthly rotating spots — see Saturday tab</div></div></div>
+        <div class="tl-row"><div class="tl-time">4:30 PM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Return home · light meal</div></div></div>
+        <div class="tl-row"><div class="tl-time">5:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-night"></div></div><div class="tl-body"><div class="tl-name">Full rest evening — zero study</div><div class="tl-note">Mental reset = better Sunday retention</div></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Sunday</div><span class="badge b-pink">MEAL PREP + OSCP 5h</span></div>
+      <div class="tl">
+        <div class="tl-row"><div class="tl-time">7:30 AM</div><div class="tl-pipe"><div class="tl-dot dc-wake"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Wake — leisurely</div></div></div>
+        <div class="tl-row"><div class="tl-time">8:00 AM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Light oats + whey</div><div class="tl-note">Rest day — smaller portions</div><div class="tl-prot">30g protein · 380 kcal</div></div></div>
+        <div class="tl-row"><div class="tl-time">8:00 AM</div><div class="tl-pipe"><div class="tl-dot dc-prep"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">🍳 Meal Prep — 2 hrs</div><div class="tl-note">Pot 1: Chicken/Mutton Palao · Pot 2: Dal Khichdi · 5 boiled eggs · tilapia marinade (Tue/Wed/Fri fillets)</div></div></div>
+        <div class="tl-row"><div class="tl-time">10:00 AM</div><div class="tl-pipe"><div class="tl-dot dc-study"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Prep done · OSCP session 1</div><div class="tl-note">PEN-200 · labs · 2.5 hrs</div></div></div>
+        <div class="tl-row"><div class="tl-time">1:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Lunch — Dal Khichdi (fresh)</div><div class="tl-prot">18–30g protein</div></div></div>
+        <div class="tl-row"><div class="tl-time">2:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-study"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">OSCP session 2 — 2.5 hrs</div><div class="tl-note">HTB boxes · writeups · AD attacks</div></div></div>
+        <div class="tl-row"><div class="tl-time">4:30 PM</div><div class="tl-pipe"><div class="tl-dot dc-wake"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Walk / stretch / break</div><div class="tl-note">No gym Sunday — active rest</div></div></div>
+        <div class="tl-row"><div class="tl-time">6:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-food"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Dinner — Chicken Palao</div><div class="tl-prot">42g protein · 520 kcal</div></div></div>
+        <div class="tl-row"><div class="tl-time">7:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-study"></div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-name">Review / plan next week</div><div class="tl-note">Cert progress check · week ahead layout</div></div></div>
+        <div class="tl-row"><div class="tl-time">10:00 PM</div><div class="tl-pipe"><div class="tl-dot dc-night"></div></div><div class="tl-body"><div class="tl-name">Sleep early — Monday reset</div></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TAB 3 — PPL SPLITS
+═══════════════════════════════════════════════ -->
+<div class="panel" id="tab-gym">
+  <div class="sec">// ppl_rotation — Mon Push · Tue Pull · Wed Legs · Thu Push · Fri Pull · Sat Legs</div>
+  <div class="g2">
+
+    <div class="card">
+      <div class="card-head"><div class="card-title"><span class="ppl-type ppl-push">PUSH</span> Monday / Thursday</div></div>
+      <div style="padding:12px 16px 14px;">
+        <ul class="row-list">
+          <li><span>Barbell Bench Press</span><span class="row-val">4 × 8</span></li>
+          <li><span>Incline DB Press</span><span class="row-val">3 × 10</span></li>
+          <li><span>Overhead Press (BB)</span><span class="row-val">3 × 8</span></li>
+          <li><span>Cable Lateral Raises</span><span class="row-val">4 × 15</span></li>
+          <li><span>Tricep Rope Pushdown</span><span class="row-val">3 × 12</span></li>
+          <li><span>Overhead DB Tricep Ext.</span><span class="row-val">3 × 12</span></li>
+          <li><span>Hanging Leg Raises</span><span class="row-val">3 × 15</span></li>
+          <li><span>Cable Crunches</span><span class="row-val">3 × 20</span></li>
+          <li><span>Incline treadmill walk (cool-down)</span><span class="row-val">10 min</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title"><span class="ppl-type ppl-pull">PULL</span> Tuesday / Friday</div></div>
+      <div style="padding:12px 16px 14px;">
+        <ul class="row-list">
+          <li><span>Barbell Deadlift</span><span class="row-val">4 × 5</span></li>
+          <li><span>Pull-ups / Lat Pulldown</span><span class="row-val">4 × 8</span></li>
+          <li><span>Seated Cable Row</span><span class="row-val">3 × 10</span></li>
+          <li><span>Face Pulls</span><span class="row-val">3 × 15</span></li>
+          <li><span>DB Hammer Curls</span><span class="row-val">3 × 12</span></li>
+          <li><span>Barbell Curl</span><span class="row-val">3 × 10</span></li>
+          <li><span>Reverse Crunches</span><span class="row-val">3 × 20</span></li>
+          <li><span>Plank Hold</span><span class="row-val">3 × 45s</span></li>
+          <li><span>Incline treadmill walk (cool-down)</span><span class="row-val">10 min</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title"><span class="ppl-type ppl-legs">LEGS</span> Wednesday / Saturday</div></div>
+      <div style="padding:12px 16px 14px;">
+        <ul class="row-list">
+          <li><span>Barbell Back Squat</span><span class="row-val">4 × 8</span></li>
+          <li><span>Romanian Deadlift (RDL)</span><span class="row-val">3 × 10</span></li>
+          <li><span>Leg Press</span><span class="row-val">3 × 12</span></li>
+          <li><span>Walking Lunges</span><span class="row-val">3 × 12ea</span></li>
+          <li><span>Leg Curl Machine</span><span class="row-val">3 × 12</span></li>
+          <li><span>Seated Calf Raises</span><span class="row-val">4 × 20</span></li>
+          <li><span>Ab Wheel Rollouts</span><span class="row-val">3 × 12</span></li>
+          <li><span>Bicycle Crunches</span><span class="row-val">3 × 20</span></li>
+          <li><span>Incline treadmill walk</span><span class="row-val">10 min</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">6-Pack Protocol</div><span class="badge b-green">6'1" · 87 kg → shred</span></div>
+      <div style="padding:12px 16px 14px;">
+        <ul class="row-list">
+          <li><span>Target body fat</span><span class="row-val row-val-gold">~12–13%</span></li>
+          <li><span>Starting estimate</span><span class="row-val row-val-gold">~18–20%</span></li>
+          <li><span>Calorie deficit</span><span class="row-val row-val-green">500 kcal/day</span></li>
+          <li><span>Ab work</span><span class="row-val row-val-green">Every session ×3 ex</span></li>
+          <li><span>Cardio</span><span class="row-val row-val-green">10 min incline walk daily</span></li>
+          <li><span>Progressive overload</span><span class="row-val">+2.5–5 lb/week</span></li>
+          <li><span>Timeline</span><span class="row-val row-val-gold">16–20 weeks</span></li>
+          <li><span>Protein floor</span><span class="row-val row-val-green">130g min even rest days</span></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TAB 4 — STUDY PLAN
+═══════════════════════════════════════════════ -->
+<div class="panel" id="tab-study">
+  <div class="sec">// certification_roadmap — OSCP primary · rotate Wed/Fri to prevent burnout</div>
+
+  <div class="study-track">
+    <div class="study-head">
+      <div class="study-title">🔴 OSCP / PEN-200 — HackTheBox + OffSec</div>
+      <span class="badge b-red">PRIMARY</span>
+    </div>
+    <div class="day-pills">
+      <div class="dp dp-on">MON<br>2h</div>
+      <div class="dp dp-on">TUE<br>2h</div>
+      <div class="dp dp-off">WED<br>—</div>
+      <div class="dp dp-on">THU<br>2h</div>
+      <div class="dp dp-off">FRI<br>—</div>
+      <div class="dp dp-off">SAT<br>—</div>
+      <div class="dp dp-full">SUN<br>5h</div>
+    </div>
+    <div class="study-note"><strong>Weekly: ~11h</strong> — Mon/Tue/Thu 8–10 PM + Sunday double session (10:30–1 PM and 2–4:30 PM).<br>
+    Sequence: PEN-200 modules → Active Directory attacks → Buffer overflow → HTB OSCP-like boxes → writeups → mock 24h exam prep.</div>
+  </div>
+
+  <div class="study-track">
+    <div class="study-head">
+      <div class="study-title">🟡 DevSecOps — HackTheBox Path</div>
+      <span class="badge b-gold">ROTATE WED</span>
+    </div>
+    <div class="day-pills">
+      <div class="dp dp-off">MON</div>
+      <div class="dp dp-off">TUE</div>
+      <div class="dp dp-alt">WED<br>2h</div>
+      <div class="dp dp-off">THU</div>
+      <div class="dp dp-off">FRI</div>
+      <div class="dp dp-off">SAT</div>
+      <div class="dp dp-off">SUN</div>
+    </div>
+    <div class="study-note"><strong>Weekly: ~2h</strong> — Wednesday evening 8–10 PM. Covers CI/CD pipeline security, SAST/DAST, container security, secrets management, IaC scanning. Directly applicable to your Security Engineer role at NC DHHS — natural rotation from OSCP pentesting domain.</div>
+  </div>
+
+  <div class="study-track">
+    <div class="study-head">
+      <div class="study-title">🟣 AI Red Teamer — HackTheBox</div>
+      <span class="badge b-purple">ROTATE FRI</span>
+    </div>
+    <div class="day-pills">
+      <div class="dp dp-off">MON</div>
+      <div class="dp dp-off">TUE</div>
+      <div class="dp dp-off">WED</div>
+      <div class="dp dp-off">THU</div>
+      <div class="dp dp-alt">FRI<br>2h</div>
+      <div class="dp dp-off">SAT</div>
+      <div class="dp dp-off">SUN</div>
+    </div>
+    <div class="study-note"><strong>Weekly: ~2h</strong> — Friday 8–10 PM. End-of-week, lower mental load but engaging. Covers LLM prompt injection, model evasion, AI system attacks. Strong career differentiator given AI boom — sets you apart from standard pentesters.</div>
+  </div>
+
+  <div class="sec" style="margin-top:20px">// anti_burnout_rules</div>
+  <div class="card">
+    <div style="padding:12px 16px 14px;">
+      <ul class="row-list">
+        <li><span>OSCP blocked after 10 PM</span><span class="row-val">Cognitive fatigue kills retention</span></li>
+        <li><span>Saturday = zero study</span><span class="row-val">Mental reset mandatory</span></li>
+        <li><span>Wed/Fri alternate subjects</span><span class="row-val">Same domain daily = burnout</span></li>
+        <li><span>Sunday writeup ritual</span><span class="row-val">Consolidates week's learning</span></li>
+        <li><span>HTB Battlegrounds/events</span><span class="row-val">Competitive motivation ×1/month</span></li>
+        <li><span>Gym is not competing with study</span><span class="row-val">It enables the study sessions</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TAB 5 — MEAL OVERVIEW
+═══════════════════════════════════════════════ -->
+<div class="panel" id="tab-meals">
+  <div class="sec">// macro_targets — cut phase · 6'1" · 87 kg</div>
+  <div class="macro-strip">
+    <div class="macro-card"><div class="macro-val" style="color:var(--gold)">2,000</div><div class="macro-lbl">Calories</div><div class="macro-note">~500 deficit from 2,500 TDEE</div></div>
+    <div class="macro-card"><div class="macro-val" style="color:var(--green)">158g</div><div class="macro-lbl">Protein</div><div class="macro-note">~1.8g per kg bodyweight</div></div>
+    <div class="macro-card"><div class="macro-val" style="color:var(--cyan)">180g</div><div class="macro-lbl">Carbs</div><div class="macro-note">Drop to 120g rest days</div></div>
+    <div class="macro-card"><div class="macro-val" style="color:var(--purple)">55g</div><div class="macro-lbl">Fat</div><div class="macro-note">Ghee · almonds · fish oil</div></div>
+    <div class="macro-card"><div class="macro-val" style="color:var(--orange)">30g</div><div class="macro-lbl">Fiber</div><div class="macro-note">Dal + oats + veggies</div></div>
+  </div>
+
+  <div class="sec">// week_meal_grid — chicken/mutton palao + dal khichdi rotation</div>
+  <div class="week-scroll">
+    <div class="week-row">
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">MON</div><div class="wday-type t-std">Push Day</div></div>
+        <div class="wday-body">
+          <div class="meal-slot"><span class="ms-time">7 AM</span><span class="ms-name">Oats + Whey</span><span class="ms-prot">35g P</span></div>
+          <div class="meal-slot"><span class="ms-time">12 PM</span><span class="ms-name t-meat">Chicken Palao</span><span class="ms-prot">42g P</span></div>
+          <div class="meal-slot"><span class="ms-time">3:30</span><span class="ms-name">Curd + Almonds</span><span class="ms-prot">10g P</span></div>
+          <div class="meal-slot"><span class="ms-time">7 PM</span><span class="ms-name">Whey shake</span><span class="ms-prot">25g P</span></div>
+          <div class="meal-slot"><span class="ms-time">7:45</span><span class="ms-name t-meat">Palao + Roti</span><span class="ms-prot">35g P</span></div>
+          <div class="meal-slot"><span class="ms-time">10 PM</span><span class="ms-name">Curd 150g</span><span class="ms-prot">8g P</span></div>
+        </div>
+      </div>
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">TUE</div><div class="wday-type t-std">Pull Day</div></div>
+        <div class="wday-body">
+          <div class="meal-slot"><span class="ms-time">7 AM</span><span class="ms-name">Oats + Whey</span><span class="ms-prot">35g P</span></div>
+          <div class="meal-slot"><span class="ms-time">12 PM</span><span class="ms-name t-meat">Chicken Palao</span><span class="ms-prot">42g P</span></div>
+          <div class="meal-slot"><span class="ms-time">3:30</span><span class="ms-name">Greek Yogurt</span><span class="ms-prot">12g P</span></div>
+          <div class="meal-slot"><span class="ms-time">7 PM</span><span class="ms-name">Whey shake</span><span class="ms-prot">25g P</span></div>
+          <div class="meal-slot"><span class="ms-time">7:45</span><span class="ms-name t-meat">Tilapia fillet + Dal Khichdi</span><span class="ms-prot">44g P</span></div>
+          <div class="meal-slot"><span class="ms-time">10 PM</span><span class="ms-name">Egg ×1 + Curd</span><span class="ms-prot">14g P</span></div>
+        </div>
+      </div>
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">WED</div><div class="wday-type t-veg">Legs · Veg</div></div>
+        <div class="wday-body">
+          <div class="meal-slot"><span class="ms-time">7 AM</span><span class="ms-name">Oats + Whey</span><span class="ms-prot">35g P</span></div>
+          <div class="meal-slot"><span class="ms-time">12 PM</span><span class="ms-name t-veg">Khichdi + 1 egg + tilapia</span><span class="ms-prot">48g P</span></div>
+          <div class="meal-slot"><span class="ms-time">3:30</span><span class="ms-name">Curd + Almonds</span><span class="ms-prot">10g P</span></div>
+          <div class="meal-slot"><span class="ms-time">7 PM</span><span class="ms-name">Whey shake</span><span class="ms-prot">25g P</span></div>
+          <div class="meal-slot"><span class="ms-time">7:45</span><span class="ms-name t-veg">Khichdi + 1 egg</span><span class="ms-prot">24g P</span></div>
+          <div class="meal-slot"><span class="ms-time">10 PM</span><span class="ms-name">Curd 150g</span><span class="ms-prot">8g P</span></div>
+        </div>
+      </div>
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">THU</div><div class="wday-type t-std">Push Day</div></div>
+        <div class="wday-body">
+          <div class="meal-slot"><span class="ms-time">7 AM</span><span class="ms-name">Oats + Whey</span><span class="ms-prot">35g P</span></div>
+          <div class="meal-slot"><span class="ms-time">12 PM</span><span class="ms-name t-meat">Chicken Palao</span><span class="ms-prot">42g P</span></div>
+          <div class="meal-slot"><span class="ms-time">3:30</span><span class="ms-name">Greek Yogurt</span><span class="ms-prot">12g P</span></div>
+          <div class="meal-slot"><span class="ms-time">7 PM</span><span class="ms-name">Whey shake</span><span class="ms-prot">25g P</span></div>
+          <div class="meal-slot"><span class="ms-time">7:45</span><span class="ms-name t-meat">Palao + Roti</span><span class="ms-prot">35g P</span></div>
+          <div class="meal-slot"><span class="ms-time">10 PM</span><span class="ms-name">Curd 150g</span><span class="ms-prot">8g P</span></div>
+        </div>
+      </div>
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">FRI</div><div class="wday-type t-std">Pull Day</div></div>
+        <div class="wday-body">
+          <div class="meal-slot"><span class="ms-time">7 AM</span><span class="ms-name">Oats + Whey</span><span class="ms-prot">35g P</span></div>
+          <div class="meal-slot"><span class="ms-time">12 PM</span><span class="ms-name t-meat">Chicken Palao</span><span class="ms-prot">42g P</span></div>
+          <div class="meal-slot"><span class="ms-time">3:30</span><span class="ms-name">Curd + Almonds</span><span class="ms-prot">10g P</span></div>
+          <div class="meal-slot"><span class="ms-time">7 PM</span><span class="ms-name">Whey shake</span><span class="ms-prot">25g P</span></div>
+          <div class="meal-slot"><span class="ms-time">7:45</span><span class="ms-name t-meat">Tilapia fillet + Dal Khichdi</span><span class="ms-prot">44g P</span></div>
+          <div class="meal-slot"><span class="ms-time">10 PM</span><span class="ms-name">Egg ×1 + Curd</span><span class="ms-prot">14g P</span></div>
+        </div>
+      </div>
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">SAT</div><div class="wday-type t-veg">Legs · Out</div></div>
+        <div class="wday-body">
+          <div class="meal-slot"><span class="ms-time">7:30</span><span class="ms-name">Oats + Whey</span><span class="ms-prot">35g P</span></div>
+          <div class="meal-slot"><span class="ms-time">10:30</span><span class="ms-name">Post-gym Whey</span><span class="ms-prot">27g P</span></div>
+          <div class="meal-slot"><span class="ms-time">1 PM</span><span class="ms-name">Pack lunch (outing)</span><span class="ms-prot">38g P</span></div>
+          <div class="meal-slot"><span class="ms-time">6 PM</span><span class="ms-name t-meat">Light Palao</span><span class="ms-prot">30g P</span></div>
+          <div class="meal-slot"><span class="ms-time">10 PM</span><span class="ms-name">Curd + fruit</span><span class="ms-prot">8g P</span></div>
+        </div>
+      </div>
+      <div class="wday">
+        <div class="wday-head"><div class="wday-label">SUN</div><div class="wday-type" style="color:var(--pink)">Prep + OSCP</div></div>
+        <div class="wday-body">
+          <div class="meal-slot"><span class="ms-time">8 AM</span><span class="ms-name">Light Oats</span><span class="ms-prot">30g P</span></div>
+          <div class="meal-slot"><span class="ms-time">8–10</span><span class="ms-name" style="color:var(--pink)">🍳 MEAL PREP</span><span class="ms-prot">Both pots</span></div>
+          <div class="meal-slot"><span class="ms-time">1 PM</span><span class="ms-name t-veg">Khichdi (fresh)</span><span class="ms-prot">18g P</span></div>
+          <div class="meal-slot"><span class="ms-time">6 PM</span><span class="ms-name t-meat">Chicken Palao</span><span class="ms-prot">42g P</span></div>
+          <div class="meal-slot"><span class="ms-time">10 PM</span><span class="ms-name">Curd + milk</span><span class="ms-prot">8g P</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note"><strong>Week A</strong> → Chicken Palao + Dal Khichdi &nbsp;|&nbsp; <strong>Week B</strong> → Mutton Palao + Dal Khichdi. Alternate every Sunday. Tilapia fillets replace eggs as the primary protein on Tue/Fri/Wed evenings — pan-fry or air-fry in 10 min alongside khichdi. Keep 5 boiled eggs in fridge weekly as backup snack and khichdi topper.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TAB 6 — RECIPES
+═══════════════════════════════════════════════ -->
+<div class="panel" id="tab-recipes">
+  <div class="sec">// instant_pot_batch_recipes — sunday cook · 5 portions each</div>
+  <div class="g2">
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Chicken / Mutton Palao</div><span class="badge b-gold">MEAT · 5 PORTIONS</span></div>
+      <div class="r-macros">
+        <div class="rm"><span class="rm-v" style="color:var(--gold)">520</span><span class="rm-l">kcal</span></div>
+        <div class="rm"><span class="rm-v" style="color:var(--green)">42g</span><span class="rm-l">protein</span></div>
+        <div class="rm"><span class="rm-v" style="color:var(--cyan)">58g</span><span class="rm-l">carbs</span></div>
+        <div class="rm"><span class="rm-v" style="color:var(--purple)">8g</span><span class="rm-l">fat</span></div>
+      </div>
+      <div style="padding:12px 16px 4px;"><div class="sec" style="margin-bottom:8px">Ingredients</div>
+        <ul class="row-list">
+          <li><span>Chicken breast / mutton (curry cut)</span><span class="row-val row-val-gold">1 kg</span></li>
+          <li><span>Basmati rice (soaked 20 min)</span><span class="row-val row-val-gold">400g</span></li>
+          <li><span>Onion sliced</span><span class="row-val row-val-gold">3 large</span></li>
+          <li><span>Tomato chopped</span><span class="row-val row-val-gold">2</span></li>
+          <li><span>Ginger garlic paste</span><span class="row-val row-val-gold">2 tbsp</span></li>
+          <li><span>Palao / biryani masala</span><span class="row-val row-val-gold">2 tbsp</span></li>
+          <li><span>Whole spices (bay, clove, cardamom, cinnamon)</span><span class="row-val row-val-gold">1 set</span></li>
+          <li><span>Yogurt (curd)</span><span class="row-val row-val-gold">3 tbsp</span></li>
+          <li><span>Oil or ghee</span><span class="row-val row-val-gold">1 tbsp</span></li>
+          <li><span>Water</span><span class="row-val row-val-gold">600 ml</span></li>
+          <li><span>Coriander + mint, turmeric, salt</span><span class="row-val row-val-gold">to taste</span></li>
+        </ul>
+      </div>
+      <div class="steps-body">
+        <div class="sec" style="margin-bottom:8px">Steps — Instant Pot</div>
+        <div class="step-row"><div class="step-n">1</div><div class="step-t">Sauté High: ghee → cumin + whole spices → sliced onions golden (~8 min) → ginger garlic paste 2 min <span class="step-time">10 min</span></div></div>
+        <div class="step-row"><div class="step-n">2</div><div class="step-t">Add meat, sear all sides. Add tomatoes, turmeric, masala, salt, curd. Mix well to coat meat. <span class="step-time">5 min</span></div></div>
+        <div class="step-row"><div class="step-n">3</div><div class="step-t">Layer drained rice over meat — DO NOT stir. Pour water evenly. Scatter mint + coriander on top.</div></div>
+        <div class="step-row"><div class="step-n">4</div><div class="step-t">Seal lid → Pressure Cook High: <strong>12 min chicken</strong> / <strong>22 min mutton</strong> → natural release 10 min → quick release <span class="step-time">22–32 min</span></div></div>
+        <div class="step-row"><div class="step-n">5</div><div class="step-t">Fluff gently from edges. Divide into 5 airtight boxes. Cool before fridge. Good 4–5 days.</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Dal Khichdi</div><span class="badge b-green">VEG · 5 PORTIONS</span></div>
+      <div class="r-macros">
+        <div class="rm"><span class="rm-v" style="color:var(--gold)">420</span><span class="rm-l">kcal</span></div>
+        <div class="rm"><span class="rm-v" style="color:var(--green)">18g</span><span class="rm-l">protein</span></div>
+        <div class="rm"><span class="rm-v" style="color:var(--cyan)">72g</span><span class="rm-l">carbs</span></div>
+        <div class="rm"><span class="rm-v" style="color:var(--orange)">9g</span><span class="rm-l">fiber</span></div>
+      </div>
+      <div style="padding:12px 16px 4px;"><div class="sec" style="margin-bottom:8px">Ingredients</div>
+        <ul class="row-list">
+          <li><span>Moong dal or toor dal (washed)</span><span class="row-val row-val-green">200g</span></li>
+          <li><span>Basmati or brown rice (washed)</span><span class="row-val row-val-green">300g</span></li>
+          <li><span>Onion chopped</span><span class="row-val row-val-green">2</span></li>
+          <li><span>Tomato chopped</span><span class="row-val row-val-green">2</span></li>
+          <li><span>Ginger garlic paste</span><span class="row-val row-val-green">1½ tbsp</span></li>
+          <li><span>Cumin seeds</span><span class="row-val row-val-green">1 tsp</span></li>
+          <li><span>Turmeric, coriander powder, garam masala</span><span class="row-val row-val-green">½ tsp each</span></li>
+          <li><span>Ghee</span><span class="row-val row-val-green">1 tbsp</span></li>
+          <li><span>Water</span><span class="row-val row-val-green">900 ml</span></li>
+          <li><span>Lemon juice, salt</span><span class="row-val row-val-green">to taste</span></li>
+        </ul>
+      </div>
+      <div class="steps-body">
+        <div class="sec" style="margin-bottom:8px">Steps — Instant Pot / Stovetop Pressure Cooker</div>
+        <div class="step-row"><div class="step-n">1</div><div class="step-t">Sauté: ghee → cumin splutters → onions translucent (~5 min) → ginger garlic paste 1 min <span class="step-time">6 min</span></div></div>
+        <div class="step-row"><div class="step-n">2</div><div class="step-t">Add tomatoes, turmeric, coriander, garam masala, salt. Cook until oil separates (~4 min). <span class="step-time">4 min</span></div></div>
+        <div class="step-row"><div class="step-n">3</div><div class="step-t">Add washed dal + rice. Stir to coat masala. Pour water. Mix once.</div></div>
+        <div class="step-row"><div class="step-n">4</div><div class="step-t">Seal lid → Pressure Cook High 10 min → natural release 10 min → quick release <span class="step-time">20 min</span></div></div>
+        <div class="step-row"><div class="step-n">5</div><div class="step-t">Stir, squeeze lemon, adjust thickness with hot water. Divide into 5 boxes. Serve alongside pan-fried tilapia fillet for full protein hit. Add 1 boiled egg on top as a bonus topper.</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Morning Oats — Daily Standard</div><span class="badge b-cyan">EVERY DAY · 5 MIN</span></div>
+      <div class="r-macros">
+        <div class="rm"><span class="rm-v" style="color:var(--gold)">450</span><span class="rm-l">kcal</span></div>
+        <div class="rm"><span class="rm-v" style="color:var(--green)">35g</span><span class="rm-l">protein</span></div>
+        <div class="rm"><span class="rm-v" style="color:var(--cyan)">60g</span><span class="rm-l">carbs</span></div>
+        <div class="rm"><span class="rm-v" style="color:var(--orange)">8g</span><span class="rm-l">fiber</span></div>
+      </div>
+      <div style="padding:12px 16px 4px;"><div class="sec" style="margin-bottom:8px">Ingredients</div>
+        <ul class="row-list">
+          <li><span>Rolled oats</span><span class="row-val row-val-gold">80g</span></li>
+          <li><span>Whey protein (any flavour)</span><span class="row-val row-val-gold">1 scoop (25g)</span></li>
+          <li><span>Banana</span><span class="row-val row-val-gold">1 medium</span></li>
+          <li><span>Water or low-fat milk</span><span class="row-val row-val-gold">250 ml</span></li>
+          <li><span>Creatine monohydrate (separate glass)</span><span class="row-val row-val-gold">5g</span></li>
+          <li><span>Black coffee</span><span class="row-val row-val-gold">1 cup</span></li>
+        </ul>
+      </div>
+      <div class="steps-body">
+        <div class="step-row"><div class="step-n">1</div><div class="step-t">Microwave oats + water 2 min or stovetop 3 min until thick.</div></div>
+        <div class="step-row"><div class="step-n">2</div><div class="step-t">Stir in whey scoop while hot — dissolves and thickens. Mix creatine 5g in a separate glass of water.</div></div>
+        <div class="step-row"><div class="step-n">3</div><div class="step-t">Slice banana on top. Black coffee on side. Same every morning — zero decisions needed.</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="card-title">Spiced Tilapia Fillets</div><span class="badge b-cyan">FISH · DAILY · 10 MIN</span></div>
+      <div class="r-macros">
+        <div class="rm"><span class="rm-v" style="color:var(--gold)">180</span><span class="rm-l">kcal</span></div>
+        <div class="rm"><span class="rm-v" style="color:var(--green)">36g</span><span class="rm-l">protein</span></div>
+        <div class="rm"><span class="rm-v" style="color:var(--cyan)">0g</span><span class="rm-l">carbs</span></div>
+        <div class="rm"><span class="rm-v" style="color:var(--purple)">4g</span><span class="rm-l">fat</span></div>
+      </div>
+      <div style="padding:12px 16px 4px;"><div class="sec" style="margin-bottom:8px">Ingredients (1 serving = 1 fillet ~170g)</div>
+        <ul class="row-list">
+          <li><span>Tilapia fillet (fresh or frozen-thawed)</span><span class="row-val row-val-gold">170g</span></li>
+          <li><span>Turmeric</span><span class="row-val row-val-gold">¼ tsp</span></li>
+          <li><span>Red chilli powder or paprika</span><span class="row-val row-val-gold">½ tsp</span></li>
+          <li><span>Coriander powder</span><span class="row-val row-val-gold">½ tsp</span></li>
+          <li><span>Ginger garlic paste</span><span class="row-val row-val-gold">½ tsp</span></li>
+          <li><span>Lemon juice</span><span class="row-val row-val-gold">1 tsp</span></li>
+          <li><span>Salt</span><span class="row-val row-val-gold">to taste</span></li>
+          <li><span>Oil spray (or ½ tsp oil)</span><span class="row-val row-val-gold">minimal</span></li>
+        </ul>
+      </div>
+      <div class="steps-body">
+        <div class="sec" style="margin-bottom:8px">Steps — Pan or Air Fryer</div>
+        <div class="step-row"><div class="step-n">1</div><div class="step-t">Pat fillet dry. Mix turmeric, chilli, coriander, ginger garlic paste, lemon, salt into a paste. Rub all over fillet both sides.</div></div>
+        <div class="step-row"><div class="step-n">2</div><div class="step-t"><strong>Pan:</strong> heat non-stick on medium-high, spray oil, cook 3–4 min per side until golden and flaky. <strong>Air fryer:</strong> 200°C for 8–10 min, flip halfway. <span class="step-time">8–10 min</span></div></div>
+        <div class="step-row"><div class="step-n">3</div><div class="step-t">Serve alongside Dal Khichdi or Palao. Squeeze fresh lemon on top. Done — 36g protein in 10 minutes.</div></div>
+        <div class="step-row"><div class="step-n">💡</div><div class="step-t"><strong>Batch option:</strong> Marinate 4–5 fillets Sunday, store raw in fridge. Pan-fry fresh each night in 10 min — much better texture than reheating cooked fish.</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+═══════════════════════════════════════════════ -->
+<div class="panel" id="tab-protein">
+  <div class="sec">// daily_protein_breakdown — training day target: ~158g</div>
+
+  <div class="pb-wrap">
+    <div class="pb-title">Training Day — Chicken Palao (Mon/Thu)</div>
+    <div class="pb-row"><div class="pb-lbl">Oats + Whey (morning)</div><div class="pb-bg"><div class="pb-fill" style="width:22%"></div></div><div class="pb-v">35g</div></div>
+    <div class="pb-row"><div class="pb-lbl">Chicken Palao (lunch)</div><div class="pb-bg"><div class="pb-fill" style="width:27%"></div></div><div class="pb-v">42g</div></div>
+    <div class="pb-row"><div class="pb-lbl">Curd + Almonds (snack)</div><div class="pb-bg"><div class="pb-fill" style="width:7%"></div></div><div class="pb-v">10g</div></div>
+    <div class="pb-row"><div class="pb-lbl">Post-gym Whey</div><div class="pb-bg"><div class="pb-fill" style="width:16%"></div></div><div class="pb-v">25g</div></div>
+    <div class="pb-row"><div class="pb-lbl">Dinner — Palao + Roti</div><div class="pb-bg"><div class="pb-fill" style="width:22%"></div></div><div class="pb-v">35g</div></div>
+    <div class="pb-row"><div class="pb-lbl">Night Curd</div><div class="pb-bg"><div class="pb-fill" style="width:5%"></div></div><div class="pb-v">8g</div></div>
+    <div class="pb-total"><div class="pb-total-l">Total</div><div class="pb-total-v">~155g ✓</div></div>
+  </div>
+
+  <div class="pb-wrap">
+    <div class="pb-title">Tilapia + Veg Day — Tue / Fri / Wed</div>
+    <div class="pb-row"><div class="pb-lbl">Oats + Whey (morning)</div><div class="pb-bg"><div class="pb-fill" style="width:21%"></div></div><div class="pb-v">35g</div></div>
+    <div class="pb-row"><div class="pb-lbl">Dal Khichdi + Tilapia (lunch Wed)</div><div class="pb-bg"><div class="pb-fill" style="width:29%"></div></div><div class="pb-v">48g</div></div>
+    <div class="pb-row"><div class="pb-lbl">Curd + Almonds (snack)</div><div class="pb-bg"><div class="pb-fill" style="width:7%"></div></div><div class="pb-v">10g</div></div>
+    <div class="pb-row"><div class="pb-lbl">Post-gym Whey</div><div class="pb-bg"><div class="pb-fill" style="width:16%"></div></div><div class="pb-v">25g</div></div>
+    <div class="pb-row"><div class="pb-lbl">Tilapia fillet + Khichdi (dinner)</div><div class="pb-bg"><div class="pb-fill" style="width:27%"></div></div><div class="pb-v">44g</div></div>
+    <div class="pb-row"><div class="pb-lbl">Egg ×1 + Night Curd</div><div class="pb-bg"><div class="pb-fill" style="width:9%"></div></div><div class="pb-v">14g</div></div>
+    <div class="pb-total"><div class="pb-total-l">Total</div><div class="pb-total-v">~176g ✓✓</div></div>
+  </div>
+
+  <div class="note"><strong>Tilapia advantage:</strong> 36g protein per fillet, ~180 kcal, near-zero fat — the leanest protein source in the plan. Cooks in 10 min pan-fry or air fryer. On Tue/Fri/Wed evenings it replaces the egg-only dinner and pushes total daily protein to ~176g — well above target on those days, banking protein for the week.</div>
+
+  <div class="sec">// must_not_miss_foods — gym non-negotiables</div>
+  <div class="card">
+    <div style="padding:12px 16px 14px;">
+      <ul class="row-list">
+        <li><span>🥣 Whey protein ×2 scoops/day</span><span class="row-val row-val-green">50g P</span></li>
+        <li><span>🐟 Tilapia fillet (Tue/Wed/Fri dinner)</span><span class="row-val row-val-green">36g P · leanest protein</span></li>
+        <li><span>🥚 Eggs ×1 daily (night or khichdi topper)</span><span class="row-val row-val-green">6–12g P</span></li>
+        <li><span>🍗 Chicken / mutton palao (Mon/Thu/Tue/Sat lunch)</span><span class="row-val row-val-green">42g P</span></li>
+        <li><span>🌾 Oats 80g (slow carbs)</span><span class="row-val" style="color:var(--cyan)">Pre-commute fuel</span></li>
+        <li><span>🍌 Banana (pre/post gym)</span><span class="row-val" style="color:var(--cyan)">Fast carbs</span></li>
+        <li><span>🥛 Curd / Greek yogurt daily</span><span class="row-val row-val-green">Casein overnight</span></li>
+        <li><span>🌿 Dal (any) every day</span><span class="row-val row-val-gold">Fiber + plant P</span></li>
+        <li><span>🥜 Almonds 15–20 daily</span><span class="row-val row-val-gold">Healthy fat</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TAB 8 — SUPPLEMENTS
+═══════════════════════════════════════════════ -->
+<div class="panel" id="tab-supps">
+  <div class="sec">// supplement_stack — minimal · science-backed · no wasted money</div>
+  <div class="g2">
+    <div class="supp-card">
+      <div class="supp-icon">⚡</div>
+      <div>
+        <div class="supp-name">Creatine Monohydrate <span class="active-tag">✓ TAKING</span></div>
+        <div class="supp-dose">5g daily</div>
+        <div class="supp-why">Most researched supplement in existence. Increases ATP production → more reps, more strength, faster recovery. Non-negotiable on PPL 6-day.</div>
+        <div class="supp-when">⏱ Mix in water with morning oats or post-gym. Timing irrelevant — daily consistency is everything.</div>
+      </div>
+    </div>
+    <div class="supp-card">
+      <div class="supp-icon">🥛</div>
+      <div>
+        <div class="supp-name">Whey Protein</div>
+        <div class="supp-dose">2 scoops/day (25g each = 50g total)</div>
+        <div class="supp-why">Fast-digesting complete protein. Covers 50g of 158g daily target without extra calories. Non-negotiable during a cut when food volume is reduced.</div>
+        <div class="supp-when">⏱ Scoop 1: morning in oats. Scoop 2: immediately post-gym before driving home.</div>
+      </div>
+    </div>
+    <div class="supp-card">
+      <div class="supp-icon">☀️</div>
+      <div>
+        <div class="supp-name">Vitamin D3</div>
+        <div class="supp-dose">2,000–4,000 IU daily</div>
+        <div class="supp-why">~80% of South Asians in the US are deficient. Low D3 directly lowers testosterone and recovery speed — affects gym performance and cognitive focus for study sessions.</div>
+        <div class="supp-when">⏱ Morning with breakfast (fat-soluble — absorbs with ghee/almonds).</div>
+      </div>
+    </div>
+    <div class="supp-card">
+      <div class="supp-icon">🌙</div>
+      <div>
+        <div class="supp-name">Magnesium Glycinate</div>
+        <div class="supp-dose">300mg nightly</div>
+        <div class="supp-why">Depleted by heavy training. Improves deep sleep quality (critical for muscle repair and OSCP memory consolidation). Reduces cortisol — new job + certs + 6-day gym is high load.</div>
+        <div class="supp-when">⏱ Night — 30 min before sleep. Glycinate form: no laxative effect unlike oxide form.</div>
+      </div>
+    </div>
+    <div class="supp-card">
+      <div class="supp-icon">🐟</div>
+      <div>
+        <div class="supp-name">Omega-3 Fish Oil</div>
+        <div class="supp-dose">1–2g EPA/DHA daily</div>
+        <div class="supp-why">Reduces workout inflammation and joint soreness (important on 6-day PPL). Supports brain focus for long OSCP sessions. Keep refrigerated to avoid oxidation.</div>
+        <div class="supp-when">⏱ With dinner.</div>
+      </div>
+    </div>
+    <div class="supp-card" style="opacity:.55;border-color:rgba(74,85,104,.25);">
+      <div class="supp-icon">🚫</div>
+      <div>
+        <div class="supp-name">Skip These (for now)</div>
+        <div class="supp-dose">Save money</div>
+        <div class="supp-why">Pre-workout → black coffee does it. BCAAs → redundant with 2 scoops whey + meat diet. Fat burners → useless, deficit does the work. Multivitamin → D3 + omega-3 + real food covers it.</div>
+      </div>
+    </div>
+  </div>
+  <div class="note"><strong>Monthly cost:</strong> Creatine ~$15 · Whey 2kg ~$45 · D3 ~$8 · Magnesium glycinate ~$12 · Fish oil ~$15 = <strong>~$95/month total</strong>. Everything else is food.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TAB 9 — SUNDAY PREP
+═══════════════════════════════════════════════ -->
+<div class="panel" id="tab-sunday">
+  <div class="sec">// sunday_prep_sequence — 8:00 AM to 10:00 AM · run both pots in parallel</div>
+  <div class="card" style="padding:16px;margin-bottom:16px;">
+
+    <div class="prep-row">
+      <div class="prep-time">8:00 AM</div>
+      <div class="prep-dot" style="background:var(--gold)"></div>
+      <div class="prep-body">
+        <div class="prep-name">Start Palao — Sauté base (Instant Pot)</div>
+        <div class="prep-detail">Sauté High: ghee → whole spices → sliced onions. While onions cook, wash and soak rice in a bowl.</div>
+        <span class="prep-tag" style="background:rgba(245,166,35,.1);color:var(--gold);border:1px solid rgba(245,166,35,.2)">Pot 1 active</span>
+      </div>
+    </div>
+
+    <div class="prep-row">
+      <div class="prep-time">8:10 AM</div>
+      <div class="prep-dot" style="background:var(--gold)"></div>
+      <div class="prep-body">
+        <div class="prep-name">Add meat + masala to Pot 1</div>
+        <div class="prep-detail">Sear chicken/mutton. Add tomatoes, spices, curd. Mix. Layer drained rice on top. Pour water. Seal lid → Pressure Cook High: 12 min (chicken) or 22 min (mutton).</div>
+      </div>
+    </div>
+
+    <div class="prep-row">
+      <div class="prep-time">8:20 AM</div>
+      <div class="prep-dot" style="background:var(--green)"></div>
+      <div class="prep-body">
+        <div class="prep-name">Start Dal Khichdi — stovetop pressure cooker</div>
+        <div class="prep-detail">Run in parallel. Sauté onions + spices + tomatoes → add washed dal + rice + water → 3–4 whistles (10 min cook + natural release).</div>
+        <span class="prep-tag" style="background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)">Pot 2 active</span>
+      </div>
+    </div>
+
+    <div class="prep-row">
+      <div class="prep-time">8:30 AM</div>
+      <div class="prep-dot" style="background:var(--purple)"></div>
+      <div class="prep-body">
+        <div class="prep-name">Boil 5 eggs + Marinate tilapia</div>
+        <div class="prep-detail">Small pot: 5 eggs → 10 min boil → ice bath → peel → fridge. Simultaneously: mix spice paste (turmeric, chilli, coriander, ginger garlic, lemon) and coat 3 tilapia fillets. Wrap and refrigerate — pan-fry fresh each Tue/Wed/Fri in 10 min.</div>
+      </div>
+    </div>
+
+    <div class="prep-row">
+      <div class="prep-time">8:45 AM</div>
+      <div class="prep-dot" style="background:var(--green)"></div>
+      <div class="prep-body">
+        <div class="prep-name">Dal Khichdi done</div>
+        <div class="prep-detail">Turn off stovetop. Let pressure release naturally. Open, add lemon juice, stir, taste for salt.</div>
+      </div>
+    </div>
+
+    <div class="prep-row">
+      <div class="prep-time">9:00 AM</div>
+      <div class="prep-dot" style="background:var(--gold)"></div>
+      <div class="prep-body">
+        <div class="prep-name">Palao natural release + fluff</div>
+        <div class="prep-detail">Instant Pot natural release 10 min → quick release. Open lid. Fluff gently from edges with fork. Don't overmix.</div>
+      </div>
+    </div>
+
+    <div class="prep-row">
+      <div class="prep-time">9:15 AM</div>
+      <div class="prep-dot" style="background:var(--pink)"></div>
+      <div class="prep-body">
+        <div class="prep-name">Portion everything into labeled boxes</div>
+        <div class="prep-detail">5 boxes Palao (Mon/Tue/Thu/Fri lunch + 1 dinner) · 5 boxes Dal Khichdi (Wed + Tue/Fri/Sun dinner + Sun lunch) · eggs in separate container.</div>
+        <span class="prep-tag" style="background:rgba(236,72,153,.1);color:var(--pink);border:1px solid rgba(236,72,153,.2)">Label Mon–Sun</span>
+      </div>
+    </div>
+
+    <div class="prep-row">
+      <div class="prep-time">9:45 AM</div>
+      <div class="prep-dot" style="background:var(--muted)"></div>
+      <div class="prep-body">
+        <div class="prep-name">Cool before refrigerating</div>
+        <div class="prep-detail">Leave boxes open to cool 20–30 min at room temp. Close lids. Refrigerate. Good 4–5 days.</div>
+      </div>
+    </div>
+
+    <div class="prep-row">
+      <div class="prep-time">10:00 AM</div>
+      <div class="prep-dot" style="background:var(--cyan)"></div>
+      <div class="prep-body">
+        <div class="prep-name">✅ Prep complete — open laptop · OSCP session 1</div>
+        <div class="prep-detail">Week is fully loaded. Kitchen closed until next Sunday.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Weekly shopping list:</strong> 1 kg chicken or mutton · 3 tilapia fillets (fresh or frozen) · 400g basmati rice · 200g moong dal · 300g basmati/brown rice · 5 eggs · 500g oats · whey scoops · 500g curd/Greek yogurt · almonds 200g (bi-weekly) · 7 bananas · tomatoes · onions · ginger garlic paste · standard spices.<br><br>
+    <strong>Tilapia tip:</strong> Buy a bag of frozen tilapia fillets (~$8–10 for 10 fillets at Walmart/Costco) — stays good for weeks, thaw overnight in fridge before use.<br><br>
+    <strong>Estimated weekly grocery cost:</strong> ~$40–$50 at Indian grocery + Walmart (Patel Brothers / Bhavani on Davis Drive near Morrisville, NC).
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TAB 10 — 52 SATURDAY SPOTS
+═══════════════════════════════════════════════ -->
+<div class="panel" id="tab-places">
+  <div class="sec">// 52_saturdays — every saturday a new place · Morrisville NC 27560 · Corolla Hybrid</div>
+
+  <div class="sstat-row">
+    <div class="sstat"><div class="sstat-v" style="color:var(--gold)">52</div><div class="sstat-l">Total spots</div></div>
+    <div class="sstat"><div class="sstat-v" style="color:var(--green)">18</div><div class="sstat-l">Near &lt;30 min</div></div>
+    <div class="sstat"><div class="sstat-v" style="color:var(--cyan)">20</div><div class="sstat-l">Mid 30–90 min</div></div>
+    <div class="sstat"><div class="sstat-v" style="color:var(--gold)">14</div><div class="sstat-l">Far 90min–2h</div></div>
+    <div class="sstat"><div class="sstat-v" style="color:var(--green)">$0–5</div><div class="sstat-l">Most spots free</div></div>
+    <div class="sstat"><div class="sstat-v" style="color:var(--orange)">10 AM</div><div class="sstat-l">Gym done by</div></div>
+  </div>
+
+  <div class="filter-bar">
+    <span class="filter-lbl">Distance:</span>
+    <button class="fbtn fn" onclick="sf('near',this)">🟢 Near &lt;30 min</button>
+    <button class="fbtn fm" onclick="sf('mid',this)">🔵 Mid 30–90 min</button>
+    <button class="fbtn ff" onclick="sf('far',this)">🟡 Far 90min–2h</button>
+    <span class="filter-lbl" style="margin-left:6px;">Type:</span>
+    <button class="fbtn ft" onclick="sf('nature',this)">🌿 Nature</button>
+    <button class="fbtn fc" onclick="sf('city',this)">🏙 City</button>
+    <button class="fbtn fb" onclick="sf('beach',this)">🏖 Beach/Water</button>
+    <button class="fbtn fadv" id="adv-btn" onclick="sfAdv(this)">🔴 Adventure</button>
+    <button class="fbtn" onclick="sc2()">✕ Clear</button>
+    <input class="sbox" type="text" placeholder="Search…" oninput="ss(this.value)">
+  </div>
+
+  <div class="rcount" id="rcount">Showing all 52 spots</div>
+  <div class="no-res" id="no-res">No spots match. Try clearing filters.</div>
+
+  <div id="sc-wrap">
+
+  <!-- JANUARY -->
+  <div class="month-block"><div class="month-hd"><span class="month-nm">JANUARY</span><div class="month-ln"></div></div><div class="spots-row">
+    <div class="sc" data-d="near" data-t="nature" data-q="lake crabtree morrisville hiking biking kayak"><div class="sc-head"><div class="sc-wk"><span>WEEK 1</span><span>#01</span></div><div class="sc-name">Lake Crabtree County Park</div><div class="sc-loc">Morrisville, NC<span class="sc-dist dn">10 min</span></div></div><div class="sc-body"><div class="sc-what">Your backyard gem — 520-acre lake, MTB trails, hiking, seasonal kayak rentals. Perfect first Saturday, zero travel.</div><div class="stags"><span class="st sn">Hiking</span><span class="st sn">MTB</span><span class="st">Lake</span><span class="st sn">Free</span></div></div></div>
+    <div class="sc" data-d="near" data-t="nature" data-q="umstead state park raleigh forest trails company mill creek"><div class="sc-head"><div class="sc-wk"><span>WEEK 2</span><span>#02</span></div><div class="sc-name">William B. Umstead State Park</div><div class="sc-loc">Raleigh, NC<span class="sc-dist dn">15 min</span></div></div><div class="sc-body"><div class="sc-what">5,000+ acres of forest. 22 miles of hiking + 13 miles multi-use. Company Mill Trail winds through creeks and old mill ruins — the signature hike.</div><div class="stags"><span class="st sn">Forest trails</span><span class="st sn">Free</span><span class="st">Wildlife</span></div></div></div>
+    <div class="sc" data-d="near" data-t="nature" data-q="go ape treetop raleigh adventure zipline ropes course canopy north carolina"><div class="sc-head"><div class="sc-wk"><span>WEEK 3</span><span>#03 🔴 ADVENTURE</span></div><div class="sc-name">Go Ape Treetop Adventure Park</div><div class="sc-loc">North Raleigh, NC<span class="sc-dist dn">25 min</span></div></div><div class="sc-body"><div class="sc-what">Treetop ropes course + zipline through the forest canopy. 500-ft zipline, platforms up to 50 ft, 40+ obstacles. 2–3 hrs of pure adrenaline. Book in advance — slots fill fast on Saturdays.</div><div class="stags"><span class="st sadv">🤸 Ropes course</span><span class="st sadv">Zipline</span><span class="st sadv">Canopy</span></div></div></div>
+    <div class="sc" data-d="near" data-t="nature" data-q="bond park cary lake loop trail walking kayak fishing"><div class="sc-head"><div class="sc-wk"><span>WEEK 4</span><span>#04</span></div><div class="sc-name">Bond Park — Lake Loop Trail</div><div class="sc-loc">Cary, NC<span class="sc-dist dn">20 min</span></div></div><div class="sc-body"><div class="sc-what">3-mile loop around a beautiful lake. Kayak launch, fishing pier, picnic spots. Great post-gym active recovery walk. Very clean and well-maintained.</div><div class="stags"><span class="st sn">Lake loop</span><span class="st">Walking</span><span class="st sn">Free</span></div></div></div>
+  </div></div>
+
+  <!-- FEBRUARY -->
+  <div class="month-block"><div class="month-hd"><span class="month-nm">FEBRUARY</span><div class="month-ln"></div></div><div class="spots-row">
+    <div class="sc" data-d="near" data-t="nature" data-q="neuse river greenway raleigh paved trail 27 miles running cycling birdwatching"><div class="sc-head"><div class="sc-wk"><span>WEEK 5</span><span>#05</span></div><div class="sc-name">Neuse River Greenway Trail</div><div class="sc-loc">Raleigh, NC<span class="sc-dist dn">20 min</span></div></div><div class="sc-body"><div class="sc-what">27.5-mile uninterrupted paved greenway. Historic sites, suspension bridges, boardwalks. Pick a section and do an out-and-back. Outstanding birding in winter.</div><div class="stags"><span class="st sn">Greenway</span><span class="st">River</span><span class="st sn">Free</span></div></div></div>
+    <div class="sc" data-d="near" data-t="city" data-q="rushhour karting morrisville two story go kart track axe throwing VR electric karts 40mph"><div class="sc-head"><div class="sc-wk"><span>WEEK 6</span><span>#06 🔴 ADVENTURE</span></div><div class="sc-name">RushHour Karting — Morrisville</div><div class="sc-loc">Morrisville, NC<span class="sc-dist dn">5 min</span></div></div><div class="sc-body"><div class="sc-what">NC's first two-story indoor go-kart track — electric karts hitting 40 mph. Also has axe throwing lanes, VR arena, golf simulators, and a sports bar. Right in Morrisville, done by noon after gym.</div><div class="stags"><span class="st sadv">🏎 Go-karts 40mph</span><span class="st sadv">Axe throwing</span><span class="st sadv">VR arena</span></div></div></div>
+    <div class="sc" data-d="near" data-t="city" data-q="nc museum art raleigh outdoor trail art to heart loop free"><div class="sc-head"><div class="sc-wk"><span>WEEK 7</span><span>#07</span></div><div class="sc-name">NC Museum of Art — Park Loop</div><div class="sc-loc">Raleigh, NC<span class="sc-dist dn">25 min</span></div></div><div class="sc-body"><div class="sc-what">Art to Heart Trail — 5.9-mile outdoor loop with large-scale installations through 164 acres. Passes NC State, Pullen Park, downtown. Free outdoor access + free museum.</div><div class="stags"><span class="st sc2">Art</span><span class="st sn">Outdoor trail</span><span class="st sn">Free</span></div></div></div>
+    <div class="sc" data-d="near" data-t="nature" data-q="durant nature preserve north raleigh two lakes deer rock outcrops birding"><div class="sc-head"><div class="sc-wk"><span>WEEK 8</span><span>#08</span></div><div class="sc-name">Durant Nature Preserve</div><div class="sc-loc">North Raleigh, NC<span class="sc-dist dn">25 min</span></div></div><div class="sc-body"><div class="sc-what">236 acres with two lakes, rock outcrops, and hardwood forest. Deer cross the trails regularly. Feels very remote for how close it is. Great winter birding spot.</div><div class="stags"><span class="st sn">Preserve</span><span class="st">Wildlife</span><span class="st sn">Free</span></div></div></div>
+  </div></div>
+
+  <!-- MARCH -->
+  <div class="month-block"><div class="month-hd"><span class="month-nm">MARCH</span><div class="month-ln"></div></div><div class="spots-row">
+    <div class="sc" data-d="mid" data-t="nature" data-q="OC aerial Durham adventure park ropes course ninja course zipline slides warped wall bouldering"><div class="sc-head"><div class="sc-wk"><span>WEEK 9</span><span>#09 🔴 ADVENTURE</span></div><div class="sc-name">OC Aerial Adventure Park — Durham</div><div class="sc-loc">Durham, NC<span class="sc-dist dm">25 min</span></div></div><div class="sc-body"><div class="sc-what">34-element ropes course + ninja warrior runs + zipline + 18 & 21-ft slides + warped walls + bouldering. Hugely varied — spend 3+ hours easily. One of the Triangle's best adventure venues.</div><div class="stags"><span class="st sadv">🧗 Ropes course</span><span class="st sadv">Ninja warrior</span><span class="st sadv">Zipline</span></div></div></div>
+    <div class="sc" data-d="near" data-t="city" data-q="downtown apex nc historic small town breweries coffee antiques farmers market"><div class="sc-head"><div class="sc-wk"><span>WEEK 10</span><span>#10</span></div><div class="sc-name">Downtown Apex — Historic District</div><div class="sc-loc">Apex, NC<span class="sc-dist dn">20 min</span></div></div><div class="sc-body"><div class="sc-what">"Peak of Good Living" — charming historic downtown, local breweries, coffee shops, antique stores. Saturday morning farmers market in spring. Walkable and relaxed.</div><div class="stags"><span class="st sc2">Small town</span><span class="st sf">Food</span><span class="st sh">Historic</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="nature" data-q="eno river state park durham trails cable bridge suspension wildflowers spring"><div class="sc-head"><div class="sc-wk"><span>WEEK 11</span><span>#11</span></div><div class="sc-name">Eno River State Park</div><div class="sc-loc">Durham, NC<span class="sc-dist dm">20 min</span></div></div><div class="sc-body"><div class="sc-what">Iconic cable suspension bridge on Laurel Bluffs Trail. Cole Mill ruins — 19th-century gristmill tucked in the woods. Spring wildflowers are spectacular.</div><div class="stags"><span class="st sn">River trails</span><span class="st sh">Mill ruins</span><span class="st sn">Free</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="beach" data-q="neuse river outfitters wake forest kayak rental canoe guided trip river paddle adventure"><div class="sc-head"><div class="sc-wk"><span>WEEK 12</span><span>#12 🔴 ADVENTURE</span></div><div class="sc-name">Neuse River Outfitters — Kayak Trip</div><div class="sc-loc">Wake Forest, NC<span class="sc-dist dm">40 min</span></div></div><div class="sc-body"><div class="sc-what">Guided kayak and canoe trips down the Neuse River. Family-owned outfitter with rental packages and fishing lessons. Half-day river paddle through forests and wildlife. Perfect spring adventure.</div><div class="stags"><span class="st sadv">🚣 River kayak</span><span class="st sadv">Guided trip</span><span class="st sb">Wildlife</span></div></div></div>
+  </div></div>
+
+  <!-- APRIL -->
+  <div class="month-block"><div class="month-hd"><span class="month-nm">APRIL</span><div class="month-ln"></div></div><div class="spots-row">
+    <div class="sc" data-d="mid" data-t="city" data-q="chapel hill franklin street university morehead planetarium coffee galleries"><div class="sc-head"><div class="sc-wk"><span>WEEK 13</span><span>#13</span></div><div class="sc-name">Chapel Hill — Franklin Street</div><div class="sc-loc">Chapel Hill, NC<span class="sc-dist dm">35 min</span></div></div><div class="sc-body"><div class="sc-what">Vibrant university downtown with eclectic shops and cafes. Morehead Planetarium trained NASA astronauts including Neil Armstrong. Great spring afternoon walk.</div><div class="stags"><span class="st sc2">University town</span><span class="st sf">Coffee</span><span class="st sh">NASA history</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="nature" data-q="occoneechee mountain hillsborough summit overlook eno river piedmont peak hike"><div class="sc-head"><div class="sc-wk"><span>WEEK 14</span><span>#14</span></div><div class="sc-name">Occoneechee Mountain State Natural Area</div><div class="sc-loc">Hillsborough, NC<span class="sc-dist dm">35 min</span></div></div><div class="sc-body"><div class="sc-what">One of few Piedmont peaks with a real summit overlook — 350 ft elevation gain, views of the Eno River below. 2.2-mile loop. Mountain feel without the long drive.</div><div class="stags"><span class="st sn">Summit view</span><span class="st">Piedmont peak</span><span class="st sn">Free</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="nature" data-q="xtreme park adventures Durham paintball airsoft ropes course laser tag 50 acres outdoor"><div class="sc-head"><div class="sc-wk"><span>WEEK 15</span><span>#15 🔴 ADVENTURE</span></div><div class="sc-name">Xtreme Park Adventures — Durham</div><div class="sc-loc">Durham, NC<span class="sc-dist dm">25 min</span></div></div><div class="sc-body"><div class="sc-what">50 acres of outdoor adventure: paintball, airsoft, ropes courses, laser tag, and more — 10+ attractions on a massive outdoor site. Epic for an active solo Saturday with serious adrenaline output.</div><div class="stags"><span class="st sadv">🎯 Paintball</span><span class="st sadv">Airsoft</span><span class="st sadv">Ropes course</span></div></div></div>
+    <div class="sc" data-d="near" data-t="nature" data-q="shelley lake raleigh north greenway paved loop birding bald eagles flat easy"><div class="sc-head"><div class="sc-wk"><span>WEEK 16</span><span>#16</span></div><div class="sc-name">Shelley Lake Greenway Loop</div><div class="sc-loc">North Raleigh, NC<span class="sc-dist dn">20 min</span></div></div><div class="sc-body"><div class="sc-what">Easy 2.2-mile paved loop around a beautiful lake. Herons, ducks, bald eagles, and kingfishers spotted regularly. Good low-energy Saturday after a hard week.</div><div class="stags"><span class="st sn">Lake loop</span><span class="st">Birding</span><span class="st sn">Free</span></div></div></div>
+  </div></div>
+
+  <!-- MAY -->
+  <div class="month-block"><div class="month-hd"><span class="month-nm">MAY</span><div class="month-ln"></div></div><div class="spots-row">
+    <div class="sc" data-d="mid" data-t="nature" data-q="raven rock state park lillington cape fear river cliffs swimming rock outcrops"><div class="sc-head"><div class="sc-wk"><span>WEEK 17</span><span>#17</span></div><div class="sc-name">Raven Rock State Park</div><div class="sc-loc">Lillington, NC<span class="sc-dist dm">60 min</span></div></div><div class="sc-body"><div class="sc-what">4,684 acres with Cape Fear River and massive rock outcrops above it — dramatic views. Spanish Moss Trail is the highlight. Swim in the river on a hot May day.</div><div class="stags"><span class="st sn">Rock bluffs</span><span class="st sb">River swim</span><span class="st sn">Free</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="beach" data-q="haw river whitewater rafting kayaking tubing Endor Paddle Bear Creek guided rapids"><div class="sc-head"><div class="sc-wk"><span>WEEK 18</span><span>#18 🔴 ADVENTURE</span></div><div class="sc-name">Haw River — Whitewater Rafting</div><div class="sc-loc">Bear Creek, NC<span class="sc-dist dm">60 min</span></div></div><div class="sc-body"><div class="sc-what">Guided whitewater rafting or self-guided kayak/tube trips on the Haw River with Endor Paddle. Trips start at Deep River Park in Bear Creek, end near Camelback Bridge. Class II–III rapids, beginner-friendly.</div><div class="stags"><span class="st sadv">🌊 Whitewater</span><span class="st sadv">Rafting/kayak</span><span class="st sb">Rapids</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="beach" data-q="falls lake state recreation area wake forest reservoir swimming boating hiking mountains to sea trail"><div class="sc-head"><div class="sc-wk"><span>WEEK 19</span><span>#19</span></div><div class="sc-name">Falls Lake State Recreation Area</div><div class="sc-loc">Wake Forest, NC<span class="sc-dist dm">40 min</span></div></div><div class="sc-body"><div class="sc-what">12,000-acre reservoir north of Raleigh. Mountains-to-Sea Trail along its shores. Excellent swimming beaches in summer, Blue Jay Point County Park access. Great birding.</div><div class="stags"><span class="st sn">Reservoir</span><span class="st sb">Swimming</span><span class="st">MST trail</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="beach" data-q="cliffs neuse state park goldsboro river cliffs swimming lake trails colored clay"><div class="sc-head"><div class="sc-wk"><span>WEEK 20</span><span>#20</span></div><div class="sc-name">Cliffs of the Neuse State Park</div><div class="sc-loc">Goldsboro, NC<span class="sc-dist dm">75 min</span></div></div><div class="sc-body"><div class="sc-what">Dramatic 90-foot colored clay cliffs above the Neuse River. Clear park lake to swim in — one of NC's best. Very different landscape from the Piedmont.</div><div class="stags"><span class="st sn">River cliffs</span><span class="st sb">Park lake swim</span><span class="st">Unique geology</span></div></div></div>
+  </div></div>
+
+  <!-- JUNE -->
+  <div class="month-block"><div class="month-hd"><span class="month-nm">JUNE</span><div class="month-ln"></div></div><div class="spots-row">
+    <div class="sc" data-d="near" data-t="city" data-q="urban air morrisville indoor skydiving trampoline adventure park drop zone VR rock wall"><div class="sc-head"><div class="sc-wk"><span>WEEK 21</span><span>#21 🔴 ADVENTURE</span></div><div class="sc-name">Urban Air — Indoor Skydiving + Adventure</div><div class="sc-loc">Morrisville, NC<span class="sc-dist dn">5 min</span></div></div><div class="sc-body"><div class="sc-what">Morrisville's Urban Air has indoor skydiving (wind tunnel), a drop zone, rock climbing wall, trampolines, VR, and Sky Rider — all under one roof. Summer adventure on a hot day, right by home.</div><div class="stags"><span class="st sadv">🪂 Indoor skydiving</span><span class="st sadv">Drop zone</span><span class="st sadv">VR + climbing</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="nature" data-q="johnston mill nature preserve chapel hill birding woodland creek trails biodiversity"><div class="sc-head"><div class="sc-wk"><span>WEEK 22</span><span>#22</span></div><div class="sc-name">Johnston Mill Nature Preserve</div><div class="sc-loc">Chapel Hill, NC<span class="sc-dist dm">40 min</span></div></div><div class="sc-body"><div class="sc-what">296 acres of lush woods, creek crossings, excellent birding. Scientists log sightings here — great biodiversity. Quiet, uncrowded, beginner-friendly. Good summer shade.</div><div class="stags"><span class="st sn">Woodland</span><span class="st">Birding</span><span class="st sn">Free</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="nature" data-q="medoc mountain state park hollister NC summit ridge trail stream hidden gem northeast raleigh"><div class="sc-head"><div class="sc-wk"><span>WEEK 23</span><span>#23</span></div><div class="sc-name">Medoc Mountain State Park</div><div class="sc-loc">Hollister, NC<span class="sc-dist dm">75 min</span></div></div><div class="sc-body"><div class="sc-what">Hidden gem northeast of Raleigh. Summit Loop via Stream and Discovery loops (~4.5 mi) reaches old ridge line with great views. Air Awareness Trail near visitor center is fun and uncrowded.</div><div class="stags"><span class="st sn">Ridge hike</span><span class="st">Hidden gem</span><span class="st sn">Free</span></div></div></div>
+    <div class="sc" data-d="near" data-t="nature" data-q="treerunner adventure park raleigh treetop aerial obstacles zipline seven courses 40 feet high"><div class="sc-head"><div class="sc-wk"><span>WEEK 24</span><span>#24 🔴 ADVENTURE</span></div><div class="sc-name">TreeRunner Adventure Park — Raleigh</div><div class="sc-loc">North Raleigh, NC<span class="sc-dist dn">20 min</span></div></div><div class="sc-body"><div class="sc-what">Seven aerial courses, three difficulty levels, 70+ total obstacles reaching 40 feet high. Pure treetop adventure — requires real balance, grip, and nerve. Different from Go Ape — more courses, more variety.</div><div class="stags"><span class="st sadv">🌲 Aerial obstacles</span><span class="st sadv">7 courses</span><span class="st sadv">40ft heights</span></div></div></div>
+  </div></div>
+
+  <!-- JULY -->
+  <div class="month-block"><div class="month-hd"><span class="month-nm">JULY</span><div class="month-ln"></div></div><div class="spots-row">
+    <div class="sc" data-d="far" data-t="beach" data-q="atlantic beach fort macon state park nc coast swimming civil war fort pier fishing"><div class="sc-head"><div class="sc-wk"><span>WEEK 25</span><span>#25</span></div><div class="sc-name">Atlantic Beach + Fort Macon State Park</div><div class="sc-loc">Atlantic Beach, NC<span class="sc-dist df">2h 15m</span></div></div><div class="sc-body"><div class="sc-what">Crystal Pier fishing, wide swimming beaches. Fort Macon — restored Civil War fort on the coast, free to tour. One of NC's best beach + history combos. Leave early.</div><div class="stags"><span class="st sb">Ocean swim</span><span class="st sh">Civil War fort</span><span class="st">Fishing pier</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="beach" data-q="white lake nc freshwater carolina bay clear water swimming elizabethtown meteor lakes byway"><div class="sc-head"><div class="sc-wk"><span>WEEK 26</span><span>#26</span></div><div class="sc-name">White Lake — Carolina Bay</div><div class="sc-loc">Elizabethtown, NC<span class="sc-dist dm">90 min</span></div></div><div class="sc-body"><div class="sc-what">One of NC's clearest natural lakes — a true Carolina Bay with unusually clear water and sandy bottom. Perfect freshwater swimming without an ocean trip. Jones + Singletary Lakes nearby on Meteor Lakes Byway.</div><div class="stags"><span class="st sb">Freshwater swim</span><span class="st sn">Carolina Bay</span><span class="st">Clear water</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="nature" data-q="skydive paraclete XP raeford tandem skydiving freefall 120mph 14000 feet NC fayetteville raleigh closest"><div class="sc-head"><div class="sc-wk"><span>WEEK 27</span><span>#27 🔴 ADVENTURE</span></div><div class="sc-name">Skydive Paraclete XP — Tandem Jump</div><div class="sc-loc">Raeford, NC<span class="sc-dist dm">75 min</span></div></div><div class="sc-body"><div class="sc-what">#1 tandem skydiving near Raleigh. Freefall at 120 mph from 11,000–14,000 ft strapped to a certified instructor. NC's best skydiving facility. Book weeks ahead for Saturday slots. The ultimate adrenaline experience.</div><div class="stags"><span class="st sadv">🪂 Tandem skydive</span><span class="st sadv">14,000 ft</span><span class="st sadv">120 mph freefall</span></div></div></div>
+    <div class="sc" data-d="far" data-t="beach" data-q="outer banks corolla wild horses OBX north carolina beach coast mustangs currituck lighthouse"><div class="sc-head"><div class="sc-wk"><span>WEEK 28</span><span>#28</span></div><div class="sc-name">Outer Banks — Corolla Wild Horses</div><div class="sc-loc">Corolla, OBX NC<span class="sc-dist df">2h 30m</span></div></div><div class="sc-body"><div class="sc-what">Wild Spanish mustangs roam freely on the northern 4WD beaches. One of the most unique East Coast experiences. Pair with Currituck Lighthouse and beach time. Leave by 7:30 AM.</div><div class="stags"><span class="st sb">OBX beach</span><span class="st sn">Wild horses</span><span class="st sh">Lighthouse</span></div></div></div>
+  </div></div>
+
+  <!-- AUGUST -->
+  <div class="month-block"><div class="month-hd"><span class="month-nm">AUGUST</span><div class="month-ln"></div></div><div class="spots-row">
+    <div class="sc" data-d="far" data-t="beach" data-q="first landing state park virginia beach va coastal trails swimming cypress 1607 english landing"><div class="sc-head"><div class="sc-wk"><span>WEEK 29</span><span>#29</span></div><div class="sc-name">First Landing State Park — VA Beach</div><div class="sc-loc">Virginia Beach, VA<span class="sc-dist df">2h</span></div></div><div class="sc-body"><div class="sc-what">Where English settlers first landed in 1607. Coastal forest trails through bald cypress and live oak. Beach access right in the park. Most popular Virginia state park.</div><div class="stags"><span class="st sb">Coastal beach</span><span class="st sn">Cypress forest</span><span class="st sh">1607 landing</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="nature" data-q="lake crabtree kayak paddleboard stand up SUP rentals adventure water sports morrisville"><div class="sc-head"><div class="sc-wk"><span>WEEK 30</span><span>#30 🔴 ADVENTURE</span></div><div class="sc-name">Lake Crabtree — SUP &amp; Kayak Challenge</div><div class="sc-loc">Morrisville, NC<span class="sc-dist dn">10 min</span></div></div><div class="sc-body"><div class="sc-what">Rent a stand-up paddleboard or kayak at Lake Crabtree and aim to circumnavigate the full 520-acre lake — a real endurance challenge. Then explore the MTB trails after. Adventure in your backyard, zero drive time.</div><div class="stags"><span class="st sadv">🏄 SUP challenge</span><span class="st sadv">Kayak circuit</span><span class="st sb">Full lake loop</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="nature" data-q="uwharrie national forest troy nc backcountry hiking mountain biking gold badin lake swim ancient mountains"><div class="sc-head"><div class="sc-wk"><span>WEEK 31</span><span>#31</span></div><div class="sc-name">Uwharrie National Forest</div><div class="sc-loc">Troy, NC<span class="sc-dist dm">90 min</span></div></div><div class="sc-body"><div class="sc-what">Ancient mountains among the oldest in North America. Backcountry trails, mountain biking, gold deposits. Badin Lake for a post-hike swim. Very wild, very remote feel.</div><div class="stags"><span class="st sn">Backcountry</span><span class="st">Ancient mtns</span><span class="st sb">Badin Lake</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="city" data-q="durham american tobacco campus food restaurants waterfall courtyard bull city walkable upscale"><div class="sc-head"><div class="sc-wk"><span>WEEK 32</span><span>#32</span></div><div class="sc-name">Durham — American Tobacco Campus</div><div class="sc-loc">Durham, NC<span class="sc-dist dm">25 min</span></div></div><div class="sc-body"><div class="sc-what">Converted tobacco factory with restaurants, coffee, and a waterfall courtyard. DPAC theater nearby. More upscale and compact than Brightleaf. Easy city morning with great food.</div><div class="stags"><span class="st sc2">Architecture</span><span class="st sf">Food hall</span><span class="st sh">Tobacco campus</span></div></div></div>
+  </div></div>
+
+  <!-- SEPTEMBER -->
+  <div class="month-block"><div class="month-hd"><span class="month-nm">SEPTEMBER</span><div class="month-ln"></div></div><div class="spots-row">
+    <div class="sc" data-d="far" data-t="nature" data-q="sky valley zip tours blowing rock NC zipline 1600 feet canopy 140 acres mountain forest giant swing cliff jump rappel"><div class="sc-head"><div class="sc-wk"><span>WEEK 33</span><span>#33 🔴 ADVENTURE</span></div><div class="sc-name">Sky Valley Zip Tours — Blowing Rock</div><div class="sc-loc">Blowing Rock, NC<span class="sc-dist df">2h</span></div></div><div class="sc-body"><div class="sc-what">10 ziplines through 140 acres of Blue Ridge Mountain forest. Big Momma is a 1,600-ft fast zipline. 120-ft swinging bridge, cliff jump, and rappel also available. Views from 300 ft above the valley. Unforgettable.</div><div class="stags"><span class="st sadv">🤿 10 ziplines</span><span class="st sadv">Cliff jump</span><span class="st sadv">1,600 ft Big Momma</span></div></div></div>
+    <div class="sc" data-d="far" data-t="nature" data-q="morrow mountain state park albemarle yadkin river kayak bald eagles museum native american history"><div class="sc-head"><div class="sc-wk"><span>WEEK 34</span><span>#34</span></div><div class="sc-name">Morrow Mountain State Park</div><div class="sc-loc">Albemarle, NC<span class="sc-dist df">1h 45m</span></div></div><div class="sc-body"><div class="sc-what">Yadkin River bald eagle sightings near the dam. Kayak rentals on the river. Museum of Native American history and geology. Hiking, water, history, wildlife — something for every mood.</div><div class="stags"><span class="st sb">River kayak</span><span class="st">Bald eagles</span><span class="st sh">Native history</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="city" data-q="winston salem old salem moravian 18th century historic buildings reynolda house art museum"><div class="sc-head"><div class="sc-wk"><span>WEEK 35</span><span>#35</span></div><div class="sc-name">Winston-Salem — Old Salem + Reynolda</div><div class="sc-loc">Winston-Salem, NC<span class="sc-dist dm">90 min</span></div></div><div class="sc-body"><div class="sc-what">Old Salem is a living-history Moravian town — costumed interpreters, original 18th-century buildings. Reynolda House (RJ Reynolds estate) has excellent American art. Very different from Triangle cities.</div><div class="stags"><span class="st sh">Moravian town</span><span class="st sc2">Art museum</span><span class="st sf">Moravian cookies</span></div></div></div>
+    <div class="sc" data-d="near" data-t="city" data-q="warrior tech obstacle course readiness ninja OCR morrisville Raleigh training spartan tough mudder prep"><div class="sc-head"><div class="sc-wk"><span>WEEK 36</span><span>#36 🔴 ADVENTURE</span></div><div class="sc-name">Warrior Tech — Obstacle Course</div><div class="sc-loc">Morrisville/Raleigh, NC<span class="sc-dist dn">15 min</span></div></div><div class="sc-body"><div class="sc-what">Ninja warrior and OCR (obstacle course racing) training facility. Walls, rope climbs, monkey bars, balance beams, and timed circuits. Perfect for testing your gym fitness in a real-world challenge environment.</div><div class="stags"><span class="st sadv">🧱 Ninja warrior</span><span class="st sadv">OCR training</span><span class="st sadv">Obstacle course</span></div></div></div>
+  </div></div>
+
+  <!-- OCTOBER -->
+  <div class="month-block"><div class="month-hd"><span class="month-nm">OCTOBER</span><div class="month-ln"></div></div><div class="spots-row">
+    <div class="sc" data-d="far" data-t="nature" data-q="pilot mountain state park pinnacle nc iconic monadnock rock climbing jomeokee trail andy griffith fall foliage"><div class="sc-head"><div class="sc-wk"><span>WEEK 37</span><span>#37</span></div><div class="sc-name">Pilot Mountain State Park</div><div class="sc-loc">Pinnacle, NC<span class="sc-dist df">1h 45m</span></div></div><div class="sc-body"><div class="sc-what">NC's most iconic monadnock — the lone quartzite dome that inspired "Mt. Pilot" in Andy Griffith. Jomeokee Trail circles the base. October fall foliage from summit is unforgettable.</div><div class="stags"><span class="st sn">Iconic summit</span><span class="st">Rock climbing</span><span class="st">Fall foliage</span></div></div></div>
+    <div class="sc" data-d="far" data-t="nature" data-q="blue ridge parkway asheville fall foliage scenic drive craggy gardens black balsam graveyard fields waterfall october"><div class="sc-head"><div class="sc-wk"><span>WEEK 38</span><span>#38</span></div><div class="sc-name">Blue Ridge Parkway — Fall Foliage Drive</div><div class="sc-loc">Asheville area, NC<span class="sc-dist df">2h 15m</span></div></div><div class="sc-body"><div class="sc-what">Peak October color. Drive Milepost 355–420. Stop at Craggy Gardens, Black Balsam Knob, and Graveyard Fields waterfall. Some of the best fall scenery in the eastern US.</div><div class="stags"><span class="st sn">Fall foliage</span><span class="st">Scenic drive</span><span class="st">Waterfalls</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="beach" data-q="endor paddle deep river park bear creek self guided kayak tube camelback bridge fall scenic river"><div class="sc-head"><div class="sc-wk"><span>WEEK 39</span><span>#39 🔴 ADVENTURE</span></div><div class="sc-name">Endor Paddle — Deep River Kayak/Tube</div><div class="sc-loc">Bear Creek, NC<span class="sc-dist dm">60 min</span></div></div><div class="sc-body"><div class="sc-what">Self-guided kayak or tubing trip down the scenic Deep River. Starts at Deep River Park, ends near Camelback Bridge. Fall colours along the river banks are stunning in October. Leisurely or fast paced — your call.</div><div class="stags"><span class="st sadv">🛶 Self-guided paddle</span><span class="st sadv">River tubing</span><span class="st sb">Fall foliage</span></div></div></div>
+    <div class="sc" data-d="near" data-t="nature" data-q="umstead company mill trail fall foliage creek ruins october color orange gold hiking repeat"><div class="sc-head"><div class="sc-wk"><span>WEEK 40</span><span>#40</span></div><div class="sc-name">Umstead — Company Mill Trail (Fall)</div><div class="sc-loc">Raleigh, NC<span class="sc-dist dn">15 min</span></div></div><div class="sc-body"><div class="sc-what">Umstead revisited in fall — creek-side sections turn brilliant orange and gold in October. Old mill ruins add atmosphere. 5.5-mile loop. Best fall color hike near Morrisville.</div><div class="stags"><span class="st sn">Fall hike</span><span class="st sh">Mill ruins</span><span class="st sn">Free</span></div></div></div>
+  </div></div>
+
+  <!-- NOVEMBER -->
+  <div class="month-block"><div class="month-hd"><span class="month-nm">NOVEMBER</span><div class="month-ln"></div></div><div class="spots-row">
+    <div class="sc" data-d="far" data-t="city" data-q="roanoke virginia market district star city mill mountain star greenway farmers market art museum"><div class="sc-head"><div class="sc-wk"><span>WEEK 41</span><span>#41</span></div><div class="sc-name">Roanoke, VA — Market District</div><div class="sc-loc">Roanoke, VA<span class="sc-dist df">1h 45m</span></div></div><div class="sc-body"><div class="sc-what">Virginia's "Star City" — giant lit star on Mill Mountain overlooks the city. Historic indoor market since 1922. Greenway trail connects downtown to the mountain. Very underrated destination.</div><div class="stags"><span class="st sc2">City explore</span><span class="st sh">Historic market</span><span class="st sn">Star trail</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="nature" data-q="triangle rock club salvage yard raleigh iron works largest climbing gym NC 40000 sqft lead top rope bouldering"><div class="sc-head"><div class="sc-wk"><span>WEEK 42</span><span>#42 🔴 ADVENTURE</span></div><div class="sc-name">TRC Salvage Yard — Largest Climbing Gym NC</div><div class="sc-loc">Raleigh Iron Works, NC<span class="sc-dist dm">25 min</span></div></div><div class="sc-body"><div class="sc-what">Triangle Rock Club's Salvage Yard — 40,000+ sq ft, largest climbing gym in NC. Lead climbing, top-rope, auto-belays, and massive bouldering cave. Take a skills clinic or just send hard routes all morning.</div><div class="stags"><span class="st sadv">🧗 Lead climbing</span><span class="st sadv">40,000 sq ft</span><span class="st sadv">Bouldering cave</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="city" data-q="burlington nc outlet shopping alamance battleground revolutionary history antiques practical saturday"><div class="sc-head"><div class="sc-wk"><span>WEEK 43</span><span>#43</span></div><div class="sc-name">Burlington — Outlets + Alamance Battleground</div><div class="sc-loc">Burlington, NC<span class="sc-dist dm">45 min</span></div></div><div class="sc-body"><div class="sc-what">Burlington Outlet Village for clothing or gear. Alamance Battleground — 1771 Regulator uprising site, precursor to the Revolution. Practical + historical Saturday combo.</div><div class="stags"><span class="st sc2">Outlets</span><span class="st sh">Revolutionary battle</span><span class="st sf">Downtown food</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="nature" data-q="eno river state park winter trail fewer crowds clear river views bare trees cable bridge cold"><div class="sc-head"><div class="sc-wk"><span>WEEK 44</span><span>#44</span></div><div class="sc-name">Eno River — Winter Edition</div><div class="sc-loc">Durham, NC<span class="sc-dist dm">20 min</span></div></div><div class="sc-body"><div class="sc-what">Eno revisited in November — fewer hikers, clearer river views through bare trees, better wildlife sightings. The cable suspension bridge photographs beautifully against a winter sky.</div><div class="stags"><span class="st sn">Winter hike</span><span class="st">River views</span><span class="st sn">Free</span></div></div></div>
+  </div></div>
+
+  <!-- DECEMBER -->
+  <div class="month-block"><div class="month-hd"><span class="month-nm">DECEMBER</span><div class="month-ln"></div></div><div class="spots-row">
+    <div class="sc" data-d="mid" data-t="nature" data-q="progression climbing chapel hill bouldering gym first only class course yoga fitness training"><div class="sc-head"><div class="sc-wk"><span>WEEK 45</span><span>#45 🔴 ADVENTURE</span></div><div class="sc-name">Progression Climbing — Chapel Hill</div><div class="sc-loc">Chapel Hill, NC<span class="sc-dist dm">40 min</span></div></div><div class="sc-body"><div class="sc-what">Chapel Hill's first and only bouldering gym — 3,500 sq ft of climbing terrain. Good change of scene from TRC. Pair with a walk through UNC's campus and a protein-heavy meal on Franklin Street after.</div><div class="stags"><span class="st sadv">🧗 Bouldering</span><span class="st sadv">3,500 sq ft</span><span class="st sc2">+ Chapel Hill</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="city" data-q="downtown raleigh holiday christmas lights fayetteville street city market nc museum history seasonal december"><div class="sc-head"><div class="sc-wk"><span>WEEK 46</span><span>#46</span></div><div class="sc-name">Downtown Raleigh — Holiday Season</div><div class="sc-loc">Raleigh, NC<span class="sc-dist dm">25 min</span></div></div><div class="sc-body"><div class="sc-what">City of Oaks lights up in December. Fayetteville Street lights display, Moore Square, City Market. NC Museum of History for the holidays. Five Points for local food and gifts.</div><div class="stags"><span class="st sc2">Holiday lights</span><span class="st sf">Local food</span><span class="st">Seasonal</span></div></div></div>
+    <div class="sc" data-d="far" data-t="beach" data-q="new river state park jefferson nc oldest river canoe kayak paddle appalachian mountains remote 360 million years"><div class="sc-head"><div class="sc-wk"><span>WEEK 47</span><span>#47</span></div><div class="sc-name">New River State Park</div><div class="sc-loc">Jefferson, NC<span class="sc-dist df">2h 15m</span></div></div><div class="sc-body"><div class="sc-what">The New River is 360 million years old — one of the oldest in the world. Slow gentle current, perfect for canoeing even in winter on mild days. Remote Appalachian mountain setting.</div><div class="stags"><span class="st sn">Ancient river</span><span class="st sb">Canoe/kayak</span><span class="st">Mountains</span></div></div></div>
+    <div class="sc" data-d="near" data-t="city" data-q="urban air adventure morrisville indoor skydiving trampoline drop zone rock wall VR winter indoor December"><div class="sc-head"><div class="sc-wk"><span>WEEK 48</span><span>#48 🔴 ADVENTURE</span></div><div class="sc-name">Urban Air + RushHour Double Hit</div><div class="sc-loc">Morrisville, NC<span class="sc-dist dn">5 min</span></div></div><div class="sc-body"><div class="sc-what">A cold December Saturday calls for indoor action — hit Urban Air (indoor skydiving + drop zone + VR) in the morning, then RushHour Karting in the afternoon. Both are 5 minutes from home. Full adrenaline day, zero weather risk.</div><div class="stags"><span class="st sadv">🪂 Indoor skydiving</span><span class="st sadv">🏎 Go-karts</span><span class="st sadv">Full day combo</span></div></div></div>
+  </div></div>
+
+  <!-- BONUS WEEKS 49–52 -->
+  <div class="month-block"><div class="month-hd"><span class="month-nm">BONUS WEEKS 49–52</span><div class="month-ln"></div></div><div class="spots-row">
+    <div class="sc" data-d="mid" data-t="nature" data-q="south mountains state park morganton nc high shoals falls 80 foot waterfall jacob fork river MTB"><div class="sc-head"><div class="sc-wk"><span>WEEK 49</span><span>#49</span></div><div class="sc-name">South Mountains State Park</div><div class="sc-loc">Morganton, NC<span class="sc-dist dm">90 min</span></div></div><div class="sc-body"><div class="sc-what">High Shoals Falls — an 80-foot waterfall on a 2.7-mile trail along Jacob Fork River. One of NC's best accessible waterfalls. Excellent MTB trails also. Feels like WNC without the full drive.</div><div class="stags"><span class="st sn">80ft waterfall</span><span class="st">MTB trails</span><span class="st sn">Free</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="city" data-q="cary downtown koka booth amphitheater symphony lake greenways walkable food arts transformed city"><div class="sc-head"><div class="sc-wk"><span>WEEK 50</span><span>#50</span></div><div class="sc-name">Downtown Cary + Koka Booth Amphitheater</div><div class="sc-loc">Cary, NC<span class="sc-dist dm">20 min</span></div></div><div class="sc-body"><div class="sc-what">Transformed walkable food and arts district. Koka Booth Amphitheater sits on Symphony Lake — scenic walk around it. Page Road Greenway connects multiple parks. Easy, pleasant solo morning.</div><div class="stags"><span class="st sc2">Downtown Cary</span><span class="st sn">Lake walk</span><span class="st sf">Local food</span></div></div></div>
+    <div class="sc" data-d="far" data-t="beach" data-q="nantahala outdoor center NOC bryson city whitewater rafting kayak class II III rapids appalachian trail zipline"><div class="sc-head"><div class="sc-wk"><span>WEEK 51</span><span>#51 🔴 ADVENTURE</span></div><div class="sc-name">Nantahala Outdoor Center — Whitewater</div><div class="sc-loc">Bryson City, NC<span class="sc-dist df">2h 30m</span></div></div><div class="sc-body"><div class="sc-what">50+ years of guiding experience on the Nantahala River. Class II–III rapids in a stunning gorge. Also has ziplining, mountain biking, and a riverside restaurant. The ultimate year-end adventure Saturday.</div><div class="stags"><span class="st sadv">🌊 Class III rapids</span><span class="st sadv">Whitewater raft</span><span class="st sadv">Zipline + MTB</span></div></div></div>
+    <div class="sc" data-d="mid" data-t="city" data-q="raleigh village district five points cameron village walkable brunch local boutiques food neighborhood end of year"><div class="sc-head"><div class="sc-wk"><span>WEEK 52</span><span>#52</span></div><div class="sc-name">Raleigh — Village District + Five Points</div><div class="sc-loc">Raleigh, NC<span class="sc-dist dm">20 min</span></div></div><div class="sc-body"><div class="sc-what">Close out the year at Raleigh's most walkable neighborhoods. Cameron Village local boutiques, brunch spots, greenways. Five Points has Irregardless Café, local bakeries. Relaxed final Saturday.</div><div class="stags"><span class="st sc2">Neighborhood walk</span><span class="st sf">Brunch</span><span class="st">Local shops</span></div></div></div>
+  </div></div>
+
+  </div><!-- /sc-wrap -->
+
+  <div class="sec" style="margin-top:20px">// saturday_rules</div>
+  <div class="card">
+    <div style="padding:12px 16px 14px;">
+      <ul class="row-list">
+        <li><span>Gym by 8 AM Saturday</span><span class="row-val">Done by 10 AM → full day free</span></li>
+        <li><span>Pack your prepped lunch</span><span class="row-val">Stays on macros · saves money</span></li>
+        <li><span>Corolla Hybrid</span><span class="row-val">Perfect range for all 52 trips</span></li>
+        <li><span>Leave by 11:30 AM</span><span class="row-val">Back by 4–5 PM · rest evening</span></li>
+        <li><span>Zero study Saturday</span><span class="row-val">Mental reset = better Sunday</span></li>
+        <li><span>52 spots · 52 weeks · no repeats</span><span class="row-val">Full year mapped out ✓</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+function go(name) {
+  document.querySelectorAll('.ntab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+/* ── SATURDAY FILTER + SEARCH ── */
+let _af = { d: null, t: null, adv: false };
+const _advWeeks = new Set(['3','6','9','12','15','18','21','24','27','30','33','36','39','42','45','48','51']);
+function sf(v, btn) {
+  _af.adv = false;
+  document.getElementById('adv-btn').classList.remove('active');
+  const isD = ['near','mid','far'].includes(v);
+  const isT = ['nature','city','beach'].includes(v);
+  if (isD) {
+    _af.d = _af.d === v ? null : v;
+    document.querySelectorAll('.fn,.fm,.ff').forEach(b => b.classList.remove('active'));
+    if (_af.d) btn.classList.add('active');
+  }
+  if (isT) {
+    _af.t = _af.t === v ? null : v;
+    document.querySelectorAll('.ft,.fc,.fb').forEach(b => b.classList.remove('active'));
+    if (_af.t) btn.classList.add('active');
+  }
+  _apply();
+}
+function sfAdv(btn) {
+  _af = { d: null, t: null, adv: !_af.adv };
+  document.querySelectorAll('.fn,.fm,.ff,.ft,.fc,.fb').forEach(b => b.classList.remove('active'));
+  btn.classList.toggle('active', _af.adv);
+  _apply();
+}
+function sc2() {
+  _af = { d: null, t: null, adv: false };
+  document.querySelectorAll('.fn,.fm,.ff,.ft,.fc,.fb,.fadv').forEach(b => b.classList.remove('active'));
+  document.querySelector('.sbox').value = '';
+  document.querySelectorAll('.sc').forEach(c => c.classList.remove('hidden'));
+  _upd();
+}
+function ss(v) {
+  const q = v.toLowerCase();
+  document.querySelectorAll('.sc').forEach(c => {
+    const txt = (c.dataset.q + ' ' + c.querySelector('.sc-name').textContent).toLowerCase();
+    c.classList.toggle('hidden', q.length > 1 && !txt.includes(q));
+  });
+  _upd();
+}
+function _apply() {
+  document.querySelectorAll('.sc').forEach(c => {
+    const dm = !_af.d || c.dataset.d === _af.d;
+    const tm = !_af.t || c.dataset.t === _af.t;
+    const wkEl = c.querySelector('.sc-wk span');
+    const wkNum = wkEl ? wkEl.textContent.replace('WEEK ','').trim() : '';
+    const am = !_af.adv || _advWeeks.has(wkNum);
+    c.classList.toggle('hidden', !(dm && tm && am));
+  });
+  _upd();
+}
+function _upd() {
+  const n = document.querySelectorAll('.sc:not(.hidden)').length;
+  document.getElementById('rcount').textContent = `Showing ${n} of 52 spots`;
+  document.getElementById('no-res').classList.toggle('show', n === 0);
+}
+</script>
+</body>
+</html>
